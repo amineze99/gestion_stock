@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bricallerie - Clients</title>
+    <link rel="stylesheet" href="clients.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>Hardware Mgmt</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashbord.html">Dashboard</a></li>
+                <li><a href="produits.html">Produits</a></li>
+                <li class="active"><a href="clients.html">Clients</a></li>
+                <li><a href="fournisseurs.html">Fournisseurs</a></li>
+                <li><a href="achats.html">Achats</a></li>
+                <li><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+    <div class="dashboard-wrapper">
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-titles">
+                    <h1>Clients</h1>
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Rechercher par nom, email ou téléphone...">
+                </div>
+                <button class="btn-add" id="openClientModal">+ Ajouter un client</button>
+            </header>
+        
+    
+
+            <section class="content-body">
+                <div class="client-grid" id="clientGrid"></div>
+            </section>
+        </main>
+    </div>
+    <script src="clients.js"></script>
+</body>
+</html>

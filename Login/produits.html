@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bricallerie - Produits</title>
+    <link rel="stylesheet" href="produits.css"> </head>
+<body>
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>Hardware Mgmt</p>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashbord.html">Dashboard</a></li>
+                <li class="active"><a href="produits.html">Produits</a></li>
+                <li><a href="clients.html">Clients</a></li>
+                <li><a href="fournisseurs.html">Fournisseurs</a></li>
+                <li><a href="achats.html">Achats</a></li>
+                <li><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+        <main class="main-content">
+
+            <header class="top-header">
+
+                <h1>Produits</h1>
+
+                <button class="btn-add" id="openModal">+ Ajouter un produit</button>
+                
+
+                <div id="productModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-btn" id="closeModal">&times;</span>
+                        <h2>Nouveau Produit</h2>
+                        <form id="productForm" class="productForm">
+                            <input type="text" id="pName" placeholder="Nom" required>
+                            <input type="number" id="pStock" placeholder="Stock" required>
+                            <input type="text" id="pfourniseur" placeholder="Catégorie" required>
+                            <input type="number" id="pBuyPrice" placeholder="Prix Achat (DA)" required>
+                            <input type="number" id="pSellPrice" placeholder="Prix Vente (DA)" required>
+                            <input type="text" id="pfourniseur" placeholder="Fournisseur" required>
+                            <button type="submit" class="btn-save">Enregistrer</button>
+                        </form>
+                    </div> 
+                </div>
+            </header>
+
+            <section class="content-body">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Produit</th>
+
+                                <th>Catégorie</th>
+
+                                <th>Stock</th>
+
+                                <th>Prix d'achat (DA)</th>
+
+                                <th>Prix de vente (DA)</th>
+
+                                <th>Fournisseur</th>
+
+                                <th>Status</th>
+
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="productsTableBody">
+
+                            </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="produits.js"></script>
+    
+</body>
+</html>

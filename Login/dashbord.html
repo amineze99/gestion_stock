@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bricallerie - Dashboard</title>
+    <link rel="stylesheet" href="dashbord.css">
+    </head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>Hardware Mgmt</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active"><a href="dashbord.html">Dashboard</a></li>
+                <li><a href="produits.html">Produits</a></li>
+                <li><a href="clients.html">Clients</a></li>
+                <li><a href="fournisseurs.html">Fournisseurs</a></li>
+                <li><a href="achats.html">Achats</a></li>
+                <li><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Rechercher produits, clients...">
+                </div>
+                <div class="user-profile">
+                    <button class="btn-add">+ Ajouter Produit</button>
+                </div>
+            </header>
+
+            <section class="content-body">
+                <h1>Dashboard</h1>
+                <p>Aperçu de l'activité du magasin</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Total Products</p>
+                            <h2>0</h2>
+                            <span class="trend">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Total Clients</p>
+                            <h2>0</h2>
+                            <span class="trend">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Total Suppliers</p>
+                            <h2>0</h2>
+                            <span class="trend">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Monthly Revenue</p>
+                            <h2>0 €</h2>
+                            <span class="trend">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="recent-sales card">
+                        <h3>Ventes récentes</h3>
+                        <p>لا توجد مبيعات حالياً</p>
+                        <button class="btn-primary">+ Nouvelle vente</button>
+                    </div>
+                    <div class="stock-alerts card">
+                        <h3>Alertes stock faible</h3>
+                        <p>المخزون مكتمل حالياً</p>
+                        <button class="btn-warning">Commander produits</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>
