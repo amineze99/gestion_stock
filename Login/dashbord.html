@@ -14,7 +14,7 @@
                 <img src="photos/logo.png" alt="Logo">
                 <div class="logo-text">
                     <h3>BRICALLERIE</h3>
-                    <p>Hardware Mgmt</p>
+                    <p>The best for your Inventory Managment</p>
                 </div>
             </div>
 
@@ -22,7 +22,7 @@
                 <li class="active"><a href="dashbord.html">Dashboard</a></li>
                 <li><a href="produits.html">Produits</a></li>
                 <li><a href="clients.html">Clients</a></li>
-                <li><a href="fournisseurs.html">Fournisseurs</a></li>
+                <li><a href="fournisseur.html">Fournisseurs</a></li>
                 <li><a href="achats.html">Achats</a></li>
                 <li><a href="ventes.html">Ventes</a></li>
                 <li><a href="factures.html">Factures</a></li>
@@ -59,22 +59,21 @@
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Total Clients</p>
-                            <h2>0</h2>
-                            <span class="trend">0%</span>
+                            <h2 id="totalClientsCount">0</h2>
+                            <span id="clientTrend" class="trend">0%</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Total Suppliers</p>
                             <h2>0</h2>
-                            <span class="trend">0%</span>
+                            <span id="supplierTrend" class="trend">0%</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Monthly Revenue</p>
                             <h2>0 €</h2>
-                            <span class="trend">0%</span>
                         </div>
                     </div>
                 </div>
@@ -94,6 +93,6 @@
             </section>
         </main>
     </div>
-
+    <script src="dashbord.js"></script>
 </body>
 </html>

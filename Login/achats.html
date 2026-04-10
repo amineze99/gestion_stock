@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bricallerie - Achats</title>
+    <link rel="stylesheet" href="dashbord.css">
+    <link rel="stylesheet" href="achats.css"> </head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>The best for your Inventory Management</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashbord.html">Dashboard</a></li>
+                <li><a href="produits.html">Produits</a></li>
+                <li><a href="clients.html">Clients</a></li>
+                <li><a href="fournisseur.html">Fournisseurs</a></li>
+                <li class="active"><a href="achats.html">Achats</a></li>
+                <li><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Rechercher achats, fournisseurs...">
+                </div>
+                <div class="user-profile">
+                    <button class="btn-add" id="btnNewPurchase">+ Ajouter Achat</button>
+                    <img src="photos/admin.png" alt="Admin">
+                    <span class="admin-name"><a href="#">Admin</a></span>
+                </div>
+            </header>
+
+            <section class="content-body">
+                <div class="header-flex">
+                    <h1>Gestion des Achats</h1>
+                    <p>Enregistrez vos achats auprès des fournisseurs</p>
+                </div>
+
+                <div id="purchaseFormContainer" class="card purchase-card">
+                    <h3>Créer un bon d'achat</h3>
+                    <form id="purchaseForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fournisseur</label>
+                                <select id="selectFournisseur" required>
+                                    <option value="">Sélectionner un fournisseur</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date d'achat</label>
+                                <input type="date" id="purchaseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>N° Bon d'achat</label>
+                                <input type="text" id="bonNumber" placeholder="PO-000">
+                            </div>
+                        </div>
+
+                        <div class="product-selection-area">
+                            <div class="form-group">
+                                <label>Ajouter des produits</label>
+                                <select id="selectProduct">
+                                    <option value="">Sélectionner un produit...</option>
+                                    </select>
+                            </div>
+                        </div>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Prix d'achat</th>
+                                    <th>Quantité</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchaseItemsBody">
+                                </tbody>
+                        </table>
+
+                        <div class="purchase-footer">
+                            <div class="total-display">
+                                <span>Coût Total: </span>
+                                <strong id="grandTotal">0.00 DA</strong>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">Enregistrer l'achat</button>
+                                <button type="button" class="btn-warning" onclick="window.print()">Imprimer le bon</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="recent-purchases card" style="margin-top: 30px;">
+                        <h3>Achats récents</h3>
+                    <table class="main-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Fournisseur</th>
+                                <th>Total</th>
+                                <th>Statut</th>
+                                <th>Action</th> </tr>
+                        </thead>
+                        <tbody id="recentPurchasesTable"></tbody>
+                    </table>
+                </div>    
+            </section>
+        </main>
+    </div>
+    <script src="achats.js"></script>
+</body>
+</html>

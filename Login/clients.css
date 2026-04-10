@@ -18,9 +18,12 @@ body {
 }
 
 .main-content {
-    flex: 1;
+    flex: 1; 
     overflow-y: auto;
-    padding: 20px;
+    padding: 30px; 
+    width: 100%; /* لضمان أخذ العرض الكامل */
+    background-color: #f3f4f6;
+    justify-content: space-between;
 }
 
 /* --- 3. القائمة الجانبية (Sidebar) --- */
@@ -83,45 +86,75 @@ body {
     border-top: 1px solid #334155;
 }
 
+/* التعديل في clients.css */
 .top-header {
+    background: white;
+    padding: 15px 30px;
     display: flex;
-    align-items: center; /* لمحاذاة العناصر عمودياً في المنتصف */
-    gap: 20px; /* لإضافة مسافة موحدة بين جميع العناصر */
-    padding: 15px 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
-}
-
-
-
-.search-bar {
-    flex-grow: 1; /* هذا سيجعل خانة البحث تأخذ كل المساحة المتاحة في المنتصف */
-    max-width: 500px; /* يمكنك تحديد أقصى عرض لخانة البحث حسب رغبتك */
-    margin-left: 20px; /* مسافة إضافية بين العنوان وخانة البحث */
-}
-
-.search-bar input {
+    justify-content: space-between; /* دفع العناصر للأطراف */
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
     width: 100%;
-    padding: 8px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+}
+
+.header-titles h1 {
+    font-size: 24px;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.header-titles p {
+    color: #64748b;
+    font-size: 14px;
+}
+.search-filter-section {
+    flex-grow: 1; 
+    max-width: 500px; /* تحديد عرض منطقي كما في الموردين */
+    margin: 0 40px; /* مسافة متساوية بين العنوان والزر */
+}
+
+.search-filter-section input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-filter-section input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+
+
+.header-titles h1 {
+    font-size: 24px;
+    color: #1e293b;
+    white-space: nowrap; /* يمنع نزول العنوان لسطر جديد */
 }
 
 .btn-add {
-    margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
-    padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #2563eb;
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border-radius: 8px; /* توحيد الحواف */
     cursor: pointer;
-    white-space: nowrap; /* لمنع النص داخل الزر من الانقسام لسطرين */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.3s;
 }
-
 
 .btn-add:hover {
     background-color: #1d4ed8;
 }
+
 
 .user-profile {
     display: flex;
@@ -183,9 +216,24 @@ body {
 /* --- 6. شبكة الزبائن (Client Grid & Cards) --- */
 .client-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    /* التعديل هنا: استخدام 1fr يضمن توزيع المساحة بالتساوي على كامل العرض */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 25px; /* مسافة متناسقة بين البطاقات */
     margin-top: 25px;
+    width: 100%; /* تمدد الشبكة لملء الحاوية */
+}
+
+/* لضمان عدم وجود فراغ في الشاشات الكبيرة جداً */
+@media (min-width: 1600px) {
+    .client-grid {
+        grid-template-columns: repeat(4, 1fr); /* عرض 4 زبائن في السطر للشاشات الضخمة */
+    }
+}
+
+@media (max-width: 600px) {
+    .client-grid {
+        grid-template-columns: 1fr; /* زبون واحد في السطر في الهواتف */
+    }
 }
 
 .client-card {
@@ -271,3 +319,90 @@ body {
 .view-history:hover {
     background: #f1f5f9;
 }
+
+
+
+
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.close-btn {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #1e293b; }
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+.btn-save {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-save:hover { background-color: #1d4ed8; }
+
+
+
+
+
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-edit, .btn-delete {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-edit:hover { background: #dcfce7; }
+.btn-delete:hover { background: #fee2e2; }
+
+/* لإخفاء الـ Modal الثاني بنفس تنسيق الأول */
+#editClientModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+
+/* تأكد أن الحاوية الرئيسية مرنة */
+/* تأكد أن الحاوية الرئيسية مرنة */

@@ -18,7 +18,7 @@
                 <li><a href="dashbord.html">Dashboard</a></li>
                 <li class="active"><a href="produits.html">Produits</a></li>
                 <li><a href="clients.html">Clients</a></li>
-                <li><a href="fournisseurs.html">Fournisseurs</a></li>
+                <li><a href="fournisseur.html">Fournisseurs</a></li>
                 <li><a href="achats.html">Achats</a></li>
                 <li><a href="ventes.html">Ventes</a></li>
                 <li><a href="factures.html">Factures</a></li>
@@ -41,13 +41,22 @@
                     <div class="modal-content">
                         <span class="close-btn" id="closeModal">&times;</span>
                         <h2>Nouveau Produit</h2>
+                        <div class="input-group">
+                            <label>Add a Photo of the product</label>
+                            <input type="file" id="pImgInput" accept="image/*">
+                            <img id="imgPreview" src="" style="width: 80px; height: 80px; display:none; margin-top:10px; border-radius: 5px; object-fit: cover;">
+                        </div>
                         <form id="productForm" class="productForm">
-                            <input type="text" id="pName" placeholder="Nom" required>
-                            <input type="number" id="pStock" placeholder="Stock" required>
-                            <input type="text" id="pfourniseur" placeholder="Catégorie" required>
+                            <input type="text" id="pRef" placeholder="Référence (Unique)" required>
+                            <input type="text" id="pName" placeholder="Désignation (Nom)" required>
+                            <select id="pCategory" required>
+                                <option value="">Sélectionner Catégorie</option>
+                                <option value="1">Outillage</option> <option value="2">Électricité</option>
+                            </select>
+                            <input type="number" id="pStock" placeholder="Stock Initial" required>
+                            <input type="number" id="pMinStock" placeholder="Quantité Min (Alerte)" value="5">
                             <input type="number" id="pBuyPrice" placeholder="Prix Achat (DA)" required>
                             <input type="number" id="pSellPrice" placeholder="Prix Vente (DA)" required>
-                            <input type="text" id="pfourniseur" placeholder="Fournisseur" required>
                             <button type="submit" class="btn-save">Enregistrer</button>
                         </form>
                     </div> 

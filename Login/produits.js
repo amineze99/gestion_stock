@@ -1,93 +1,186 @@
-// دالة لضمان أن الكود يعمل بعد تحميل الصفحة بالكامل
-window.onload = function() {
+document.addEventListener('DOMContentLoaded', function() {
     
     // 1. جلب العناصر من الصفحة
     const modal = document.getElementById('productModal');
-    const btn = document.getElementById('openModal');
-    const span = document.getElementById('closeModal');
+    const btnOpen = document.getElementById('openModal');
+    const btnClose = document.getElementById('closeModal');
     const form = document.getElementById('productForm');
+    const tableBody = document.getElementById('productsTableBody');
+    const modalTitle = document.querySelector('.modal-content h2');
+    const categorySelect = document.getElementById('pCategory'); // عنصر القائمة المنسدلة
 
-    // تأكد في الكونسول أن العناصر موجودة
-    console.log("Button:", btn);
-    console.log("Modal:", modal);
+    // متغيرات لإدارة وضع التعديل
+    let editMode = false;
+    let currentProductId = null;
 
-    // 2. فتح النافذة عند الضغط على الزر
-    if (btn) {
-        btn.onclick = function() {
-            modal.style.display = "block";
-            console.log("Modal Opened");
+    // --- دالة جديدة لجلب الفئات ديناميكياً من السيرفر ---
+    async function loadCategories() {
+        try {
+            const response = await fetch('http://localhost:3000/api/categories');
+            const categories = await response.json();
+            
+            // تنظيف القائمة وترك الخيار الأول فقط
+            categorySelect.innerHTML = '<option value="">Sélectionner Catégorie</option>';
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id; // المعرف الحقيقي من قاعدة البيانات
+                option.textContent = cat.libelle;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Erreur lors du chargement des catégories:", error);
         }
     }
 
-    // 3. إغلاق النافذة عند الضغط على (x)
-    if (span) {
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-    }
-
-    // 4. إغلاق النافذة عند الضغط في أي مكان خارجها
-    window.onclick = function(event) {
+    // 2. إدارة فتح وإغلاق النافذة (Modal)
+    btnOpen.onclick = () => {
+        resetModalToAddMode();
+        modal.style.display = "block";
+    };
+    btnClose.onclick = () => {
+        modal.style.display = "none";
+        resetModalToAddMode();
+    };
+    window.onclick = (event) => {
         if (event.target == modal) {
             modal.style.display = "none";
+            resetModalToAddMode();
         }
     }
 
-    // 5. معالجة حفظ البيانات
-    if (form) {
-        form.onsubmit = function(e) {
-            e.preventDefault();
+    function resetModalToAddMode() {
+        editMode = false;
+        currentProductId = null;
+        modalTitle.innerText = "Nouveau Produit";
+        form.reset();
+    }
 
-            // جمع البيانات
-            const newProduct = {
-                name: document.getElementById('pName').value,
-                stock: document.getElementById('pStock').value,
-                buyPrice: document.getElementById('pBuyPrice').value,
-                sellPrice: document.getElementById('pSellPrice').value,
-                category: "General", // قيمة افتراضية
-                supplier: "N/A"      // قيمة افتراضية
-            };
+    // 3. جلب وعرض المنتجات
+    async function fetchAndDisplayProducts() {
+        try {
+            const response = await fetch('http://localhost:3000/api/produits');
+            const products = await response.json();
 
-            // حفظ في المصفوفة والذاكرة
-            let products = JSON.parse(localStorage.getItem('myProducts')) || [];
-            products.push(newProduct);
-            localStorage.setItem('myProducts', JSON.stringify(products));
+            tableBody.innerHTML = ""; 
 
-            // تحديث الرقم للداشبورد
-            localStorage.setItem('totalProductsCount', products.length);
+            products.forEach((product) => {
+                const isLow = product.stock_actuel <= product.quantite_min;
+                const statusClass = isLow ? 'status-low-stock' : 'status-in-stock';
+                const statusText = isLow ? 'Stock Faible' : 'En Stock';
 
-            // إغلاق وتحديث
-            modal.style.display = "none";
-            form.reset();
-            location.reload(); // أسهل طريقة لتحديث الجدول حالياً
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>
+                            <strong>${product.designation}</strong><br>
+                            <small style="color: #94a3b8">${product.referencee}</small>
+                        </td>
+                        <td>${product.category_name || "Général"}</td>
+                        <td>${product.stock_actuel}</td>
+                        <td>${product.prix_achat} DA</td>
+                        <td>${product.prix_vente} DA</td>
+                        <td>N/A</td> 
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editProduct(${product.id})">📝</button>
+                            <button class="btn-action btn-delete" onclick="deleteProduct(${product.id})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch (error) {
+            console.error("Erreur lors du chargement des produits:", error);
         }
     }
-}
-let products = JSON.parse(localStorage.getItem('myProducts')) || [
-    { pName: "Produit A", pStock: 100, pBuyPrice: 500, pSellPrice: 750 },
-    { pName: "Produit B", pStock: 50, pBuyPrice: 300, pSellPrice: 450,  category: "Électronique", supplier: "Fournisseur X" },
-    { pName: "Produit C", pStock: 200, pBuyPrice: 150, pSellPrice: 250, category: "Alimentation", supplier: "Fournisseur Y" }
-]
-function displayProducts() {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = "";
-    products.forEach((product, index) => {
-        grid.innerHTML += `
-            <div class="product-table-row">
-                <div>${product.pName}
-                    <p style="font-size:12px; color:#94a3b8">Produit #${index + 1}</p>
-                </div>
-                <div>${product.pStock}</div>
-                <div>${product.pBuyPrice} DA</div>
-                <div>${product.pSellPrice} DA</div>
-                <div>${product.category || "N/A"}</div>
-                <div>${product.supplier || "N/A"}</div>
-                <div class="actions">📝
-                    <button class="edit-btn" data-index="${index}">Modifier</button>
-                    <button class="delete-btn" data-index="${index}">Supprimer</button>
-                </div>
-            </div>
-        `;
-    });
-}
-displayProducts();
+
+    // 4. إرسال منتج جديد أو تحديث
+    form.onsubmit = async function(e) {
+        e.preventDefault();
+        
+        // التأكد من جلب القيمة المختارة بدقة
+        const selectedCategory = categorySelect.value;
+        
+        const productData = {
+            referencee: document.getElementById('pRef').value,
+            designation: document.getElementById('pName').value,
+            prix_achat: parseFloat(document.getElementById('pBuyPrice').value),
+            prix_vente: parseFloat(document.getElementById('pSellPrice').value),
+            stock_actuel: parseInt(document.getElementById('pStock').value),
+            quantite_min: parseInt(document.getElementById('pMinStock').value) || 5,
+            // نرسل القيمة كـ null إذا كانت فارغة لتجنب خطأ Foreign Key
+            id_categorie: selectedCategory === "" ? null : parseInt(selectedCategory)
+        };
+
+        const url = editMode 
+            ? `http://localhost:3000/api/produits/${currentProductId}` 
+            : 'http://localhost:3000/api/produits';
+        
+        const method = editMode ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+
+            if (response.ok) {
+                modal.style.display = "none";
+                resetModalToAddMode();
+                fetchAndDisplayProducts();
+                alert(editMode ? "Produit modifié !" : "Produit enregistré !");
+            } else {
+                const errorData = await response.json();
+                alert("Erreur : " + errorData.message);
+            }
+        } catch (error) {
+            console.error("Erreur Fetch :", error);
+        }
+    };
+
+    // 5. وظيفة التعديل
+    window.editProduct = async function(id) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/produits/${id}`);
+            const product = await response.json();
+
+            document.getElementById('pRef').value = product.referencee;
+            document.getElementById('pName').value = product.designation;
+            document.getElementById('pBuyPrice').value = product.prix_achat;
+            document.getElementById('pSellPrice').value = product.prix_vente;
+            document.getElementById('pStock').value = product.stock_actuel;
+            document.getElementById('pMinStock').value = product.quantite_min;
+            
+            
+            // اختيار الفئة الصحيحة في القائمة المنسدلة
+            categorySelect.value = product.id_categorie || "";
+
+            editMode = true;
+            currentProductId = id;
+            modalTitle.innerText = "Modifier le Produit";
+            modal.style.display = "block";
+        } catch (error) {
+            console.error("Erreur:", error);
+        }
+    };
+
+    // 6. وظيفة الحذف
+    window.deleteProduct = async function(id) {
+        if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/produits/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    fetchAndDisplayProducts();
+                }
+            } catch (error) {
+                console.error("Erreur:", error);
+            }
+        }
+    };
+
+    // --- التشغيل عند تحميل الصفحة ---
+    loadCategories(); // جلب الفئات أولاً
+    fetchAndDisplayProducts(); // عرض المنتجات
+});
