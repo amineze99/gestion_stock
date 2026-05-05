@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bricallerie - Gestion des Ventes</title>
+    <link rel="stylesheet" href="dashbord.css">
+    <link rel="stylesheet" href="achats.css"> 
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>The best for your Inventory Management</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashbord.html">Dashboard</a></li>
+                <li><a href="produits.html">Produits</a></li>
+                <li><a href="clients.html">Clients</a></li>
+                <li><a href="fournisseur.html">Fournisseurs</a></li>
+                <li><a href="achats.html">Achats</a></li>
+                <li class="active"><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Rechercher ventes, clients...">
+                </div>
+                <div class="user-profile">
+                    <button class="btn-add" id="btnNewSale">+ Nouvelle Vente</button>
+                    <img src="photos/admin.png" alt="Admin">
+                    <span class="admin-name"><a href="#">Admin</a></span>
+                </div>
+            </header>
+
+            <section class="content-body">
+                <div class="header-flex">
+                    <h1>Gestion des Ventes</h1>
+                    <p>Enregistrez vos ventes pour vos clients</p>
+                </div>
+
+                <div id="saleFormContainer" class="card purchase-card">
+                    <h3>Créer une Facture</h3>
+                    <form id="saleForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Client</label>
+                                <select id="selectClient" required>
+                                    <option value="">Sélectionner un client</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date de vente</label>
+                                <input type="date" id="saleDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>N° Facture</label>
+                                <input type="text" id="factureNumber" placeholder="FAC-000">
+                            </div>
+                        </div>
+
+                        <div class="product-selection-area">
+                            <div class="form-group">
+                                <label>Ajouter des produits</label>
+                                <select id="selectProduct">
+                                    <option value="">Sélectionner un produit...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Prix Vente</th>
+                                    <th>Quantité</th>
+                                    <th>Total</th>
+                                    <th class="no-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="saleItemsBody">
+                                </tbody>
+                        </table>
+
+                        <div class="purchase-footer">
+                            <div class="total-display">
+                                <span>Total Net: </span>
+                                <strong id="grandTotal">0.00 DA</strong>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">Valider la Vente</button>
+                                <button type="button" class="btn-warning" onclick="window.print()">
+                                        <i class="print-icon"></i> Imprimer Facture
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="recent-purchases card" style="margin-top: 30px;">
+                    <h3>Ventes récentes</h3>
+                    <table class="main-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Total</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSalesTable">
+                            </tbody>
+                    </table>
+                </div>    
+            </section>    
+        </main>
+    </div>
+
+    <script src="ventes.js"></script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+.suppliers-container { padding: 30px; background-color: #f8fafc; min-height: 100vh; }
+
+.header-section {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+}
+
+.title-group h1 { font-size: 24px; color: #1e293b; margin-bottom: 5px; }
+.title-group p { color: #64748b; font-size: 14px; }
+
+.btn-add {
+    background-color: #2563eb; color: white; border: none; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+}
+
+.search-bar { margin-bottom: 20px; }
+.search-bar input {
+    width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none;
+}
+
+.table-wrapper {
+    background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;
+}
+
+.suppliers-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.suppliers-table th { background: #f1f5f9; padding: 15px; color: #64748b; font-weight: 600; }
+.suppliers-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+
+/* أيقونة المورد البنفسجية مثل Figma */
+.supp-icon {
+    width: 35px; height: 35px; background: #f5f3ff; color: #7c3aed;
+    display: flex; align-items: center; justify-content: center; border-radius: 8px;
+}
+
+.action-btns button {
+    background: none; border: none; cursor: pointer; font-size: 16px; margin: 0 5px;
+}
+
+.pagination-text { margin-top: 15px; color: #64748b; font-size: 13px; }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #f3f4f6;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* القائمة الجانبية */
+.sidebar {
+    width: 260px;
+    background-color: #1e293b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.sidebar-logo {
+    padding: 0 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    list-style: none;
+    flex: 1;
+}
+
+.nav-links li {
+    padding: 12px 20px;
+    transition: 0.3s;
+}
+
+.nav-links li a {
+    color: #94a3b8;
+    text-decoration: none;
+    display: block;
+}
+
+.nav-links li:hover, .nav-links li.active {
+    background-color: #2563eb;
+}
+
+.nav-links li:hover a, .nav-links li.active a {
+    color: white;
+}
+
+.logout-section {
+    padding: 20px;
+    border-top: 1px solid #334155;
+}
+
+/* المحتوى الرئيسي */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+}
+.search-filter-section {
+    flex-grow: 1; /* هذا سيجعل خانة البحث تأخذ كل المساحة المتاحة في المنتصف */
+    max-width: 500px; /* يمكنك تحديد أقصى عرض لخانة البحث حسب رغبتك */
+    margin-left: 20px; /* مسافة إضافية بين العنوان وخانة البحث */
+}
+.search-filter-section input{
+     width: 100%;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.top-header {
+    background: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.search-bar input {
+    padding: 8px 15px;
+    width: 300px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.btn-add {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.content-body {
+    padding: 30px;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    gap: 12px; /* المسافة بين الصورة والنص */
+}
+
+/* تنسيق الصورة نفسها */
+.sidebar-logo img {
+    width: 40px;      /* يمكنك تغيير المقاس حسب رغبتك (مثلاً 35px أو 45px) */
+    height: auto;     /* للحفاظ على أبعاد الصورة صحيحة */
+    object-fit: contain;
+    border-radius: 4px; /* اختياري: لإعطاء حواف ناعمة */
+}
+
+/* تنسيق النص بجانب اللوجو (إذا كان موجوداً) */
+.sidebar-logo h3 {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+
+
+/* تنسيق الحاوية الرئيسية (Profile Section) */
+.user-profile {
+    display: flex;         /* تفعيل الفليكس بوكس */
+    align-items: center;    /* توسيط العناصر عمودياً تماماً على خط واحد */
+    gap: 15px;              /* مسافة موحدة بين العناصر (الزر، الصورة، الاسم) */
+}
+
+/* تنسيق صورة المستخدم لتكون بحجم النص */
+.user-profile img {
+    width: 24px;          /* عرض صغير جداً، يمكنك تجربة (32px) إذا أردتها أكبر قليلاً */
+    height: 24px;         /* نفس العرض للحفاظ على المربع */
+    border-radius: 50%;    /* جعل الصورة دائرية تماماً (مثل التصميم الاحترافي) */
+    object-fit: cover;    /* تضمن أن الوجه يملأ الدائرة بدون تمطيط */
+    display: block;
+}
+
+/* تنسيق اسم الأدمن */
+.user-profile .admin-name {
+    font-size: 14px;      /* حجم خط مناسب */
+    color: #1f2937;       /* لون نص غامق */
+    font-weight: 500;
+}
+
+/* تنسيق الزر (للتأكد من تناسقه) */
+.btn-add {
+    padding: 8px 16px;    /* بادينج مناسب */
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.admin-name a {
+    text-decoration: none; /* إزالة الخط السفلي */
+    color: inherit;        /* يجعل الرابط يأخذ نفس لون النص المحيط به (اختياري) */
+    display: inline-block; /* لضمان استجابة الرابط للمساحات بشكل أفضل */
+}
+
+/* إذا أردت أن يظهر الخط فقط عند مرور الماوس (اختياري) */
+.admin-name a:hover {
+    text-decoration: underline; 
+    color: #2563eb; /* تغيير اللون عند التمرير */
+}
+
+
+.btn-warning {
+    margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap; /* لمنع النص داخل الزر من الانقسام لسطرين */
+}
+
+
+.btn-warning:hover {
+    background-color: #1d4ed8;
+}
+
+
+.btn-primary {
+    margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap; /* لمنع النص داخل الزر من الانقسام لسطرين */
+}
+.btn-primary:hover{
+        background-color: #1d4ed8;
+}
+
+.btn-add:hover {
+    background-color: #1d4ed8;
+}
+
+
+/* تنسيقات الـ Modal الضرورية */
+.modal {
+    display: none; /* مخفي افتراضياً */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* خلفية سوداء شفافة */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 450px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    font-size: 28px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.btn-save {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}

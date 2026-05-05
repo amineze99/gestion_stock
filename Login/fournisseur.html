@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bricallerie - Fournisseurs</title>
+    <link rel="stylesheet" href="fournisseur.css"> 
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="photos/logo.png" alt="Logo">
+                <div class="logo-text">
+                    <h3>BRICALLERIE</h3>
+                    <p>Best for Inventory Management</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashbord.html">Dashboard</a></li>
+                <li><a href="produits.html">Produits</a></li>
+                <li><a href="clients.html">Clients</a></li>
+                <li class="active"><a href="fournisseur.html">Fournisseurs</a></li>
+                <li><a href="achats.html">Achats</a></li>
+                <li><a href="ventes.html">Ventes</a></li>
+                <li><a href="factures.html">Factures</a></li>
+                <li><a href="parameters.html">Paramètres</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="login.html">Déconnexion</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            
+
+            <div class="suppliers-container">
+                <div class="header-section">
+                    <div class="title-group">
+                        <h1>Fournisseurs</h1>
+                        <p>Gérer tous vos fournisseurs</p>
+                    </div>
+                    <div class="search-filter-section">
+                        <input type="text" id="supplierSearch" placeholder="Rechercher par nom, contact أو email...">
+                    </div>
+                    <button id="openSupplierModal" class="btn-add">
+                        <span class="plus-icon">+</span> Ajouter un fournisseur
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="suppliers-table">
+                        <thead>
+                            <tr>
+                                <th>Fournisseur</th>
+                                <th>Contact</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                                <th>Produits</th>
+                                <th>Total Achats</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierTableBody">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div id="paginationInfo" class="pagination-text">
+                    Affichage de 0 fournisseur(s) sur 0 total
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouveau Fournisseur</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="addSupplierForm">
+                <div class="form-group">
+                    <label>Nom de l'entreprise</label>
+                    <input type="text" id="suppNom" required>
+                </div>
+                <div class="form-group">
+                    <label>Nom du contact</label>
+                    <input type="text" id="suppContact">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="text" id="suppTel">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="suppEmail">
+                </div>
+                <div class="form-group">
+                    <label>Total achats initial</label>
+                    <input type="number" id="suppTotal" step="0.01">
+                </div>
+                <button type="submit" class="btn-save">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+    <div id="editSupplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier le Fournisseur</h2>
+                <span class="close-edit-btn" style="cursor:pointer; font-size:24px;">&times;</span>
+                </div>
+                <form id="editSupplierForm">
+                    <input type="hidden" id="editSuppId"> <div class="form-group">
+                    <label>Nom de l'entreprise</label>
+                    <input type="text" id="editSuppNom" required>
+            </div>
+                <div class="form-group">
+                    <label>Nom du contact</label>
+                    <input type="text" id="editSuppContact">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="text" id="editSuppTel">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editSuppEmail">
+                </div>
+                <div class="form-group">
+                    <label>Solde à payer (DA)</label>
+                    <input type="number" id="editSuppTotal" step="0.01">
+                </div>
+                <button type="submit" class="btn-save" style="background-color: #f59e0b;">Mettre à jour</button>
+            </form>
+        </div>
+    </div> 
+
+    <script src="fournisseur.js"></script>
+</body>
+</html>
