@@ -1,82 +1,25 @@
-// دالة لجلب العملاء من السيرفر
-async function fetchClients() {
-    try {
-        const response = await fetch('http://localhost:3000/api/clients');
-        const clients = await response.json();
-        renderClients(clients);
-    } catch (error) {
-        console.error("خطأ في جلب العملاء:", error);
-    }
-}
-
-// دالة عرض العملاء في الصفحة
-function renderClients(clients) {
-    const grid = document.getElementById('clientGrid');
-    grid.innerHTML = "";
-
-    clients.forEach((client) => {
-        grid.innerHTML += `
-            <div class="client-card">
-                <div class="card-header">
-                    <div class="user-info">
-                        <div class="user-avatar">👤</div>
-                        <div>
-                            <strong>${client.nom}</strong>
-                            <p style="font-size:12px; color:#94a3b8">ID: #${client.id}</p>
-                        </div>
-                    </div>
-                    <div class="actions">📝 🗑️</div>
-                </div>
-                <div class="contact-details">
-                    <p>📞 ${client.contact || 'Non spécifié'}</p>
-                </div>
-                <div class="card-footer">
-                    <div class="stat-box">
-                        <span>Solde à payer</span>
-                        <strong style="color: ${client.total_solde > 0 ? '#ef4444' : '#10b981'}">
-                            ${client.total_solde} DA
-                        </strong>
-                    </div>
-                </div>
-                <button class="view-history">Voir détails</button>
-            </div>
-        `;
-    });
-}
-
-// تشغيل الجلب عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', fetchClients);
-
-
-
-// 1. تعريف العناصر الأساسية من الـ HTML
+// 1. تعريف العناصر الأساسية
 const modal = document.getElementById('clientModal');
+const editModal = document.getElementById('editClientModal');
 const openModalBtn = document.getElementById('openClientModal');
 const closeModalBtn = document.querySelector('.close-btn');
+const closeEditBtn = document.querySelector('.close-edit-btn');
 const clientForm = document.getElementById('addClientForm');
+const editClientForm = document.getElementById('editClientForm');
 
-// --- الجزء الخاص بالتحكم في النافذة (Modal) ---
+// --- التحكم في النوافذ (Modal Control) ---
+openModalBtn.onclick = () => { modal.style.display = "block"; };
+closeModalBtn.onclick = () => { modal.style.display = "none"; };
+if (closeEditBtn) { closeEditBtn.onclick = () => { editModal.style.display = "none"; }; }
 
-// فتح النافذة عند الضغط على زر "Ajouter un client"
-openModalBtn.onclick = () => {
-    modal.style.display = "block";
-};
-
-// إغلاق النافذة عند الضغط على (X)
-closeModalBtn.onclick = () => {
-    modal.style.display = "none";
-};
-
-// إغلاق النافذة إذا ضغط المستخدم في أي مكان خارج الصندوق الأبيض
 window.onclick = (event) => {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+    if (event.target == modal) modal.style.display = "none";
+    if (event.target == editModal) editModal.style.display = "none";
 };
 
-// --- الجزء الخاص بالتعامل مع السيرفر (Backend) ---
+// --- التعامل مع السيرفر (Backend) ---
 
-// دالة لجلب العملاء وعرضهم (تشتغل عند تحميل الصفحة)
+// دالة جلب العملاء
 async function fetchClients() {
     try {
         const response = await fetch('http://localhost:3000/api/clients');
@@ -87,10 +30,16 @@ async function fetchClients() {
     }
 }
 
-// دالة بناء الكروت (Cards) داخل الصفحة
+// دالة عرض العملاء (الممزوجة)
 function renderClients(clients) {
     const grid = document.getElementById('clientGrid');
-    grid.innerHTML = clients.map(c => `
+    grid.innerHTML = clients.map(c => {
+        // حساب التاريخ إذا كان موجود
+        const dateAdded = c.created_at ? new Date(c.created_at).toLocaleString('fr-FR', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+        }) : 'تاريخ غير معروف';
+
+        return `
         <div class="client-card">
             <div class="card-header">
                 <div class="user-info">
@@ -98,33 +47,45 @@ function renderClients(clients) {
                     <div>
                         <strong>${c.nom}</strong>
                         <p style="font-size:12px; color:#94a3b8">ID: #${c.id}</p>
+                        <p style="font-size:11px; color:#64748b">📅 Added on: ${dateAdded}</p>
                     </div>
+                </div>
+                <div class="actions">
+                    <button onclick="openEditModal(${c.id}, '${c.nom}', '${c.contact}', ${c.total_solde}, '${c.rc || ''}', '${c.nif || ''}', '${c.ai || ''}', '${c.nis || ''}')" class="btn-edit">✏️</button>
+                    <button onclick="deleteClient(${c.id})" class="btn-delete">🗑️</button>
                 </div>
             </div>
             <div class="contact-details">
                 <p>📞 ${c.contact || 'Non spécifié'}</p>
             </div>
+            <div class="business-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; font-size: 11px; color: #475569;">
+                <span><strong>RC:</strong> ${c.rc || '---'}</span>
+                <span><strong>NIF:</strong> ${c.nif || '---'}</span>
+                <span><strong>AI:</strong> ${c.ai || '---'}</span>
+                <span><strong>NIS:</strong> ${c.nis || '---'}</span>
+            </div>
             <div class="card-footer">
                 <div class="stat-box">
                     <span>Solde à payer</span>
-                    <strong style="color: ${c.total_solde > 0 ? '#ef4444' : '#10b981'}">
-                        ${c.total_solde} DA
-                    </strong>
+                    <strong style="color: ${c.total_solde > 0 ? '#ef4444' : '#10b981'}">${c.total_solde} DA</strong>
                 </div>
             </div>
-        </div>
-    `).join('');
+            <button class="view-history">Voir détails</button>
+        </div>`;
+    }).join('');
 }
 
-// معالجة إرسال الفورم (Submit Form)
+// إضافة عميل جديد
 clientForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // منع الصفحة من التحديث
-
-    // جلب القيم من الـ Modal
+    e.preventDefault();
     const newClient = {
         nom: document.getElementById('clientNom').value,
         contact: document.getElementById('clientContact').value,
-        total_solde: parseFloat(document.getElementById('clientSolde').value) || 0
+        rc: document.getElementById('clientRC').value,
+        nif: document.getElementById('clientNIF').value,
+        ai: document.getElementById('clientAI').value,
+        nis: document.getElementById('clientNIS').value,
+        total_solde: parseFloat(document.getElementById('clientSolde').value) || 0,
     };
 
     try {
@@ -133,69 +94,52 @@ clientForm.addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newClient)
         });
-
         if (response.ok) {
             alert("Client ajouté avec succès !");
-            modal.style.display = "none"; // إغلاق النافذة
-            clientForm.reset(); // تفريغ الخانات
-            fetchClients(); // تحديث القائمة في الصفحة فوراً
-        } else {
-            alert("خطأ في إضافة العميل");
+            modal.style.display = "none";
+            clientForm.reset();
+            fetchClients();
         }
     } catch (error) {
         console.error("Erreur lors de l'ajout:", error);
-        alert("تعذر الاتصال بالسيرفر");
     }
 });
 
-// تشغيل جلب البيانات بمجرد تحميل الصفحة
-document.addEventListener('DOMContentLoaded', fetchClients);
-
-
-
-
-// --- وظائف التعديل والحذف (يجب ربطها بـ window لتعمل من الـ HTML) ---
-
+// وظيفة حذف زبون
 window.deleteClient = async function(id) {
     if (confirm("هل أنت متأكد من حذف هذا الزبون؟")) {
         try {
-            const response = await fetch(`http://localhost:3000/api/clients/${id}`, { 
-                method: 'DELETE' 
-            });
-            if (response.ok) {
-                fetchClients(); // تحديث القائمة بعد الحذف
-            }
-        } catch (error) {
-            console.error("خطأ في الحذف:", error);
-        }
+            await fetch(`http://localhost:3000/api/clients/${id}`, { method: 'DELETE' });
+            fetchClients();
+        } catch (error) { console.error("خطأ في الحذف:", error); }
     }
 };
 
-window.openEditModal = function(id, nom, contact, solde) {
-    const editModal = document.getElementById('editClientModal');
+// وظيفة فتح نافذة التعديل
+window.openEditModal = function(id, nom, contact, solde, rc = '', nif = '', ai = '', nis = '') {
     document.getElementById('editClientId').value = id;
     document.getElementById('editClientNom').value = nom;
     document.getElementById('editClientContact').value = contact;
+    document.getElementById('editClientRC').value = rc;
+    document.getElementById('editClientNIF').value = nif;
+    document.getElementById('editClientAI').value = ai;
+    document.getElementById('editClientNIS').value = nis;
     document.getElementById('editClientSolde').value = solde;
     editModal.style.display = "block";
 };
 
-// --- إغلاق النافذة ---
-const editModal = document.getElementById('editClientModal');
-const closeEditBtn = document.querySelector('.close-edit-btn');
-
-if (closeEditBtn) {
-    closeEditBtn.onclick = () => editModal.style.display = "none";
-}
-
-// --- تحديث البيانات (Submit) ---
-document.getElementById('editClientForm').addEventListener('submit', async (e) => {
+// تحديث البيانات (Submit Update)
+editClientForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('editClientId').value;
     const updatedData = {
         nom: document.getElementById('editClientNom').value,
         contact: document.getElementById('editClientContact').value,
-        total_solde: parseFloat(document.getElementById('editClientSolde').value)
+        total_solde: parseFloat(document.getElementById('editClientSolde').value),
+        rc: document.getElementById('editClientRC').value,
+        nif: document.getElementById('editClientNIF').value,
+        ai: document.getElementById('editClientAI').value,
+        nis: document.getElementById('editClientNIS').value
     };
 
     try {
@@ -204,45 +148,13 @@ document.getElementById('editClientForm').addEventListener('submit', async (e) =
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedData)
         });
-
         if (response.ok) {
             alert("تم تحديث البيانات بنجاح!");
             editModal.style.display = "none";
             fetchClients();
         }
-    } catch (error) {
-        console.error("خطأ في التحديث:", error);
-    }
+    } catch (error) { console.error("خطأ في التحديث:", error); }
 });
 
-// دالة عرض الزبائن (تأكد من وجودها كما هي)
-function renderClients(clients) {
-    const grid = document.getElementById('clientGrid');
-    grid.innerHTML = clients.map(c => `
-        <div class="client-card">
-            <div class="card-header">
-                <div class="user-info">
-                    <div class="user-avatar">👤</div>
-                    <div>
-                        <strong>${c.nom}</strong>
-                        <p style="font-size:12px; color:#94a3b8">ID: #${c.id}</p>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button onclick="openEditModal(${c.id}, '${c.nom}', '${c.contact}', ${c.total_solde})" class="btn-edit">✏️</button>
-                    <button onclick="deleteClient(${c.id})" class="btn-delete">🗑️</button>
-                </div>
-            </div>
-            <div class="contact-details">
-                <p>📞 ${c.contact || 'Non spécifié'}</p>
-            </div>
-            <div class="card-footer">
-                <div class="stat-box">
-                    <span>Solde à payer</span>
-                    <strong style="color: ${c.total_solde > 0 ? '#ef4444' : '#10b981'}">${c.total_solde} DA</strong>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
+// تشغيل الجلب عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', fetchClients);

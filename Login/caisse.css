@@ -1,0 +1,159 @@
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999; /* رقم كبير لضمان الظهور */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+#transactionModal {
+    display: none; /* هذا السطر هو الذي يجعله مخفياً عند تحميل الصفحة */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    align-items: center; /* للتوسيط */
+    justify-content: center; /* للتوسيط */
+}
+
+/* تصميم المودال العام */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.6); /* خلفية غامقة احترافية */
+    backdrop-filter: blur(8px); /* ضبابية للخلفية */
+    display: flex;
+    align-items: center; /* توسيط عمودي */
+    justify-content: center; /* توسيط أفقي */
+}
+
+/* محتوى النافذة المنبثقة */
+.modal-content {
+    background: #ffffff;
+    width: 90%;
+    max-width: 500px;
+    padding: 0; /* سنقسمها لرأس وجسم */
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* رأس المودال */
+.modal-header {
+    background: linear-gradient(135deg, #4361ee, #3f37c9);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.close-btn {
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: 0.2s;
+}
+
+.close-btn:hover { opacity: 1; transform: rotate(90deg); }
+
+/* تنسيق الفورم */
+#transactionForm {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* تحسين المدخلات */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #1e293b;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #4361ee;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+    outline: none;
+}
+
+.readonly-input {
+    background: #e2e8f0;
+    cursor: not-allowed;
+    font-weight: bold;
+}
+
+.amount-input {
+    font-weight: bold;
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+/* زر التأكيد */
+.btn-submit {
+    width: 100%;
+    background: #4361ee;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.3);
+}
+
+.btn-submit:hover {
+    background: #3730a3;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -5px rgba(67, 97, 238, 0.4);
+}

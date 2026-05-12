@@ -37,26 +37,21 @@ body {
 }
 
 .sidebar-logo {
+    padding: 20px; /* Balanced padding */
     display: flex;
     align-items: center;
-    padding: 0 20px 30px;
+    justify-content: center; /* Centers it if the sidebar is wide */
     gap: 12px;
 }
 
+
 .sidebar-logo img {
-    width: 40px;
-    height: auto;
-    object-fit: contain;
-    border-radius: 4px;
+    width: auto;          /* Maintains aspect ratio */
+    height: 60px;         /* Adjust this value to make it "bigger" */
+    max-width: 100%;      /* Prevents it from breaking the sidebar width */
+    object-fit: contain;  /* Keeps the logo from stretching */
+    display: block;
 }
-
-.sidebar-logo h3 {
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 0.5px;
-}
-
 .nav-links {
     list-style: none;
     flex: 1;
@@ -333,13 +328,26 @@ body {
     background-color: rgba(0,0,0,0.5);
 }
 
+/* تحسين النافذة المنبثقة */
 .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 25px;
+    background-color: #fefefe;
+    margin: 2% auto; /* تقليل الهامش لرفعها للأعلى */
+    padding: 20px;
     border-radius: 12px;
-    width: 400px;
+    width: 500px;
+    max-height: 85vh; /* أقصى ارتفاع 85% من الشاشة */
+    overflow-y: auto; /* إضافة سكرول إذا كانت الخانات كثيرة */
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* تنسيق الخانات لتكون في صفوف مزدوجة لتوفير المساحة */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+.form-row .form-group {
+    flex: 1;
 }
 
 .close-btn {

@@ -75,7 +75,15 @@ function renderSuppliers(suppliers) {
     const tbody = document.getElementById('supplierTableBody');
     if (!tbody) return;
 
-    tbody.innerHTML = suppliers.map(s => `
+    tbody.innerHTML = suppliers.map(s => {
+        const dateAdded = s.created_at ? new Date(s.created_at).toLocaleString('fr-FR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) : 'تاريخ غير معروف';
+        return `
         <tr>
             <td>
                 <div style="display: flex; align-items: center; gap: 12px;">
@@ -83,12 +91,15 @@ function renderSuppliers(suppliers) {
                     <div>
                         <strong style="display:block;">${s.nom}</strong>
                         <small style="color:#64748b">ID: #SUP-${s.id}</small>
+                        <p style="font-size:11px; color:#64748b">📅 Added on: ${dateAdded}</p>
                     </div>
                 </div>
             </td>
             <td>${s.contact || '---'}</td>
             <td>📞 ${s.tel || '---'}</td>
             <td>✉️ ${s.email || '---'}</td>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; font-size: 11px; color: #475569;">
+                    
             <td><span class="badge" style="background:#f1f5f9; padding:4px 8px; border-radius:12px;">0</span></td> 
             <td><strong style="color:#2563eb">${s.total_solde} DA</strong></td>
             <td class="action-btns">
@@ -96,7 +107,8 @@ function renderSuppliers(suppliers) {
                 <button onclick="deleteSupp(${s.id})" style="color: #ef4444; background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 // جعل الدالة عامة ليراها المتصفح عند الضغط على الزر
 window.deleteSupp = async function(id) {

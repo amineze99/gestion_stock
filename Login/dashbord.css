@@ -25,10 +25,19 @@ body {
 }
 
 .sidebar-logo {
-    padding: 0 20px 30px;
+    padding: 20px; /* Balanced padding */
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center; /* Centers it if the sidebar is wide */
+    gap: 12px;
+}
+
+.sidebar-logo img {
+    width: auto;          /* Maintains aspect ratio */
+    height: 60px;         /* Adjust this value to make it "bigger" */
+    max-width: 100%;      /* Prevents it from breaking the sidebar width */
+    object-fit: contain;  /* Keeps the logo from stretching */
+    display: block;
 }
 
 .nav-links {
@@ -132,29 +141,7 @@ body {
     justify-content: space-between;
 }
 
-/* تنسيق الحاوية التي تحتوي على اللوجو */
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    gap: 12px; /* المسافة بين الصورة والنص */
-}
 
-/* تنسيق الصورة نفسها */
-.sidebar-logo img {
-    width: 40px;      /* يمكنك تغيير المقاس حسب رغبتك (مثلاً 35px أو 45px) */
-    height: auto;     /* للحفاظ على أبعاد الصورة صحيحة */
-    object-fit: contain;
-    border-radius: 4px; /* اختياري: لإعطاء حواف ناعمة */
-}
-
-/* تنسيق النص بجانب اللوجو (إذا كان موجوداً) */
-.sidebar-logo h3 {
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 0.5px;
-}
 
 
 

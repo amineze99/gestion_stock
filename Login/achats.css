@@ -1,3 +1,18 @@
+.sidebar-logo {
+    padding: 20px; /* Balanced padding */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers it if the sidebar is wide */
+    gap: 12px;
+}
+
+.sidebar-logo img {
+    width: auto;          /* Maintains aspect ratio */
+    height: 60px;         /* Adjust this value to make it "bigger" */
+    max-width: 100%;      /* Prevents it from breaking the sidebar width */
+    object-fit: contain;  /* Keeps the logo from stretching */
+    display: block;
+}
 /* تنسيقات خاصة بصفحة المشتريات */
 .purchase-card {
     margin-top: 20px;
