@@ -196,6 +196,7 @@ body {
 .btn-warning {
     margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
     padding: 10px 20px;
+    letter-spacing: 2px;
     background-color: #007bff;
     color: white;
     border: none;
@@ -213,6 +214,7 @@ body {
 .btn-primary {
     margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
     padding: 10px 20px;
+    letter-spacing: 2px;
     background-color: #007bff;
     color: white;
     border: none;

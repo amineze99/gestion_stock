@@ -20,7 +20,7 @@ CREATE TABLE Categorie (
 CREATE TABLE Produit (
     id INT PRIMARY KEY AUTO_INCREMENT,
     referencee VARCHAR(50) UNIQUE NOT NULL,
-    designation VARCHAR(255) NOT NULL,
+    nom_produit VARCHAR(255) NOT NULL,
     prix_achat DECIMAL(15, 2) NOT NULL,
     prix_vente DECIMAL(15, 2) NOT NULL,
     stock_actuel INT DEFAULT 0,
