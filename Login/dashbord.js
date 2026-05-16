@@ -93,13 +93,13 @@ function getChatbotResponse(userMessage) {
     return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }
 
-// Send Message
+// Send Message to Gemini AI Backend
 async function sendMessage() {
     const userMessage = chatbotInput.value.trim();
     
     if (!userMessage) return;
     
-    // Add user message to chat
+    // 1. Add user message to chat
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'message user-message';
     userMessageDiv.innerHTML = `<p>${escapeHtml(userMessage)}</p>`;
@@ -109,15 +109,51 @@ async function sendMessage() {
     // Scroll to bottom
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
-    // Simulate bot thinking
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 2. Show "Thinking..." indicator
+    const thinkingDiv = document.createElement('div');
+    thinkingDiv.className = 'message bot-message thinking';
+    thinkingDiv.innerHTML = `<p>جاري التفكير... 🤖</p>`;
+    chatbotMessages.appendChild(thinkingDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
-    // Get and display bot response
-    const botResponse = getChatbotResponse(userMessage);
-    const botMessageDiv = document.createElement('div');
-    botMessageDiv.className = 'message bot-message';
-    botMessageDiv.innerHTML = `<p>${escapeHtml(botResponse)}</p>`;
-    chatbotMessages.appendChild(botMessageDiv);
+    try {
+        // 3. Call Backend API
+        const response = await fetch('http://localhost:3000/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: userMessage
+            })
+        });
+
+        const data = await response.json();
+        
+        // Remove thinking indicator
+        if (thinkingDiv && thinkingDiv.parentNode) {
+            chatbotMessages.removeChild(thinkingDiv);
+        }
+
+        // 4. Display bot response
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.className = 'message bot-message';
+        
+        if (data.success) {
+            botMessageDiv.innerHTML = `<p>${data.message}</p>`;
+        } else {
+            botMessageDiv.innerHTML = `<p style="color: #ef4444;">⚠️ خطأ: ${data.message}</p>`;
+        }
+        
+        chatbotMessages.appendChild(botMessageDiv);
+    } catch (error) {
+        if (thinkingDiv && thinkingDiv.parentNode) {
+            chatbotMessages.removeChild(thinkingDiv);
+        }
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message bot-message';
+        errorDiv.innerHTML = `<p style="color: #ef4444;">❌ فشل الاتصال: تأكد من تشغيل سيرفر البوت (node chat_bot.js)</p>`;
+        chatbotMessages.appendChild(errorDiv);
+        console.error("Chatbot Error:", error);
+    }
     
     // Scroll to bottom
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;

@@ -14,60 +14,8 @@ body {
     height: 100vh;
 }
 
-/* القائمة الجانبية */
-.sidebar {
-    width: 260px;
-    background-color: #1e293b;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-}
+/* Sidebar is now styled in sidebar.css */
 
-.sidebar-logo {
-    padding: 20px; /* Balanced padding */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centers it if the sidebar is wide */
-    gap: 12px;
-}
-
-.sidebar-logo img {
-    width: auto;          /* Maintains aspect ratio */
-    height: 60px;         /* Adjust this value to make it "bigger" */
-    max-width: 100%;      /* Prevents it from breaking the sidebar width */
-    object-fit: contain;  /* Keeps the logo from stretching */
-    display: block;
-}
-
-.nav-links {
-    list-style: none;
-    flex: 1;
-}
-
-.nav-links li {
-    padding: 12px 20px;
-    transition: 0.3s;
-}
-
-.nav-links li a {
-    color: #94a3b8;
-    text-decoration: none;
-    display: block;
-}
-
-.nav-links li:hover, .nav-links li.active {
-    background-color: #2563eb;
-}
-
-.nav-links li:hover a, .nav-links li.active a {
-    color: white;
-}
-
-.logout-section {
-    padding: 20px;
-    border-top: 1px solid #334155;
-}
 
 /* المحتوى الرئيسي */
 .main-content {
@@ -116,12 +64,23 @@ body {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.stat-info p { color: #64748b; font-size: 14px; }
-.stat-info h2 { margin: 10px 0; font-size: 24px; }
-.trend { color: #10b981; font-size: 12px; }
+.stat-info p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.stat-info h2 {
+    margin: 10px 0;
+    font-size: 24px;
+}
+
+.trend {
+    color: #10b981;
+    font-size: 12px;
+}
 
 /* الأقسام السفلية */
 .details-grid {
@@ -147,30 +106,40 @@ body {
 
 /* تنسيق الحاوية الرئيسية (Profile Section) */
 .user-profile {
-    display: flex;         /* تفعيل الفليكس بوكس */
-    align-items: center;    /* توسيط العناصر عمودياً تماماً على خط واحد */
-    gap: 15px;              /* مسافة موحدة بين العناصر (الزر، الصورة، الاسم) */
+    display: flex;
+    /* تفعيل الفليكس بوكس */
+    align-items: center;
+    /* توسيط العناصر عمودياً تماماً على خط واحد */
+    gap: 15px;
+    /* مسافة موحدة بين العناصر (الزر، الصورة، الاسم) */
 }
 
 /* تنسيق صورة المستخدم لتكون بحجم النص */
 .user-profile img {
-    width: 24px;          /* عرض صغير جداً، يمكنك تجربة (32px) إذا أردتها أكبر قليلاً */
-    height: 24px;         /* نفس العرض للحفاظ على المربع */
-    border-radius: 50%;    /* جعل الصورة دائرية تماماً (مثل التصميم الاحترافي) */
-    object-fit: cover;    /* تضمن أن الوجه يملأ الدائرة بدون تمطيط */
+    width: 24px;
+    /* عرض صغير جداً، يمكنك تجربة (32px) إذا أردتها أكبر قليلاً */
+    height: 24px;
+    /* نفس العرض للحفاظ على المربع */
+    border-radius: 50%;
+    /* جعل الصورة دائرية تماماً (مثل التصميم الاحترافي) */
+    object-fit: cover;
+    /* تضمن أن الوجه يملأ الدائرة بدون تمطيط */
     display: block;
 }
 
 /* تنسيق اسم الأدمن */
 .user-profile .admin-name {
-    font-size: 14px;      /* حجم خط مناسب */
-    color: #1f2937;       /* لون نص غامق */
+    font-size: 14px;
+    /* حجم خط مناسب */
+    color: #1f2937;
+    /* لون نص غامق */
     font-weight: 500;
 }
 
 /* تنسيق الزر (للتأكد من تناسقه) */
 .btn-add {
-    padding: 8px 16px;    /* بادينج مناسب */
+    padding: 8px 16px;
+    /* بادينج مناسب */
     background-color: #2563eb;
     color: white;
     border: none;
@@ -181,20 +150,25 @@ body {
 }
 
 .admin-name a {
-    text-decoration: none; /* إزالة الخط السفلي */
-    color: inherit;        /* يجعل الرابط يأخذ نفس لون النص المحيط به (اختياري) */
-    display: inline-block; /* لضمان استجابة الرابط للمساحات بشكل أفضل */
+    text-decoration: none;
+    /* إزالة الخط السفلي */
+    color: inherit;
+    /* يجعل الرابط يأخذ نفس لون النص المحيط به (اختياري) */
+    display: inline-block;
+    /* لضمان استجابة الرابط للمساحات بشكل أفضل */
 }
 
 /* إذا أردت أن يظهر الخط فقط عند مرور الماوس (اختياري) */
 .admin-name a:hover {
-    text-decoration: underline; 
-    color: #2563eb; /* تغيير اللون عند التمرير */
+    text-decoration: underline;
+    color: #2563eb;
+    /* تغيير اللون عند التمرير */
 }
 
 
 .btn-warning {
-    margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
+    margin-left: auto;
+    /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
     padding: 10px 20px;
     letter-spacing: 2px;
     background-color: #007bff;
@@ -202,7 +176,8 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    white-space: nowrap; /* لمنع النص داخل الزر من الانقسام لسطرين */
+    white-space: nowrap;
+    /* لمنع النص داخل الزر من الانقسام لسطرين */
 }
 
 
@@ -212,7 +187,8 @@ body {
 
 
 .btn-primary {
-    margin-left: auto; /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
+    margin-left: auto;
+    /* هذا سيدفع الزر إلى أقصى اليمين إذا لم تستخدم flex-grow */
     padding: 10px 20px;
     letter-spacing: 2px;
     background-color: #007bff;
@@ -220,10 +196,12 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    white-space: nowrap; /* لمنع النص داخل الزر من الانقسام لسطرين */
+    white-space: nowrap;
+    /* لمنع النص داخل الزر من الانقسام لسطرين */
 }
-.btn-primary:hover{
-        background-color: #1d4ed8;
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
 }
 
 .btn-add:hover {
@@ -294,6 +272,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

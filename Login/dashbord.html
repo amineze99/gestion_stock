@@ -1,34 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bricaillerie - Dashboard</title>
     <link rel="stylesheet" href="dashbord.css">
-    </head>
+</head>
+
 <body>
 
     <div class="dashboard-wrapper">
-        <nav class="sidebar">
-            <div class="sidebar-logo">
-                <img src="photos/logo.png" alt="Logo">
-            </div>
-
-            <ul class="nav-links">
-                <li class="active"><a href="dashbord.html">Dashboard</a></li>
-                <li><a href="produits.html">Produits</a></li>
-                <li><a href="clients.html">Clients</a></li>
-                <li><a href="fournisseur.html">Fournisseurs</a></li>
-                <li><a href="achats.html">Achats</a></li>
-                <li><a href="ventes.html">Ventes</a></li>
-                <li><a href="caisse.html">Caisse</a></li>
-                <li><a href="parameters.html">Paramètres</a></li>
-            </ul>
-
-            <div class="logout-section">
-                <a href="login.html">Déconnexion</a>
-            </div>
-        </nav>
+        <app-sidebar></app-sidebar>
+        <script src="sidebar.js"></script>
 
         <main class="main-content">
             <header class="top-header">
@@ -78,18 +62,20 @@
                     <div class="recent-sales card">
                         <h3>Ventes récentes</h3>
                         <p> Aucune vente disponible actuellement</p>
-                        <button class="btn-primary">+ Nouvelle vente</button>
+                        <button onclick="window.location.href='ventes.html'" class="btn-primary">+ Nouvelle
+                            vente</button>
                     </div>
                     <div class="stock-alerts card">
                         <h3>Alertes stock faible</h3>
                         <p>Le stock est actuellement plein.</p>
-                        <button class="btn-warning">+ Commander produits</button>
+                        <button onclick="window.location.href='achats.html'" class="btn-warning">+ Commander
+                            produits</button>
                     </div>
                 </div>
             </section>
         </main>
     </div>
-    
+
     <!-- Chatbot Section -->
     <div class="chatbot-container">
         <div class="chatbot-header">
@@ -111,4 +97,5 @@
     <button class="chatbot-toggle" id="chatbotToggle">💬</button>
     <script src="dashbord.js"></script>
 </body>
-</html> 
+
+</html>

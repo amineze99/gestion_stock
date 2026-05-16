@@ -15,60 +15,8 @@ body {
     height: 100vh;
 }
 
-/* القائمة الجانبية */
-.sidebar {
-    width: 260px;
-    background-color: #1e293b;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-}
+/* Sidebar styles moved to sidebar.css */
 
-.sidebar-logo {
-    padding: 20px; /* Balanced padding */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centers it if the sidebar is wide */
-    gap: 12px;
-}
-
-.sidebar-logo img {
-    width: auto;          /* Maintains aspect ratio */
-    height: 60px;         /* Adjust this value to make it "bigger" */
-    max-width: 100%;      /* Prevents it from breaking the sidebar width */
-    object-fit: contain;  /* Keeps the logo from stretching */
-    display: block;
-}
-
-.nav-links {
-    list-style: none;
-    flex: 1;
-}
-
-.nav-links li {
-    padding: 12px 20px;
-    transition: 0.3s;
-}
-
-.nav-links li a {
-    color: #94a3b8;
-    text-decoration: none;
-    display: block;
-}
-
-.nav-links li:hover, .nav-links li.active {
-    background-color: #2563eb;
-}
-
-.nav-links li:hover a, .nav-links li.active a {
-    color: white;
-}
-
-.logout-section {
-    padding: 20px;
-    border-top: 1px solid #334155;
-}
 
 /* --- 2. المحتوى الرئيسي --- */
 .main-content {
@@ -183,7 +131,7 @@ tbody tr:hover {
 
 /* --- استجابة الشاشة --- */
 @media (max-width: 768px) {
-    .sidebar { width: 70px; }
+    
     .sidebar a { text-align: center; font-size: 0; }
     .sidebar a::before { content: '📁'; font-size: 20px; }
 }

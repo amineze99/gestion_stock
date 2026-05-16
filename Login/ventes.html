@@ -1,36 +1,20 @@
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bricallerie - Gestion des Ventes</title>
     <link rel="stylesheet" href="dashbord.css">
-    <link rel="stylesheet" href="achats.css"> 
+    <link rel="stylesheet" href="achats.css">
 </head>
+
 <body>
 
     <div class="dashboard-wrapper">
-        <nav class="sidebar">
-            <div class="sidebar-logo">
-                <img src="photos/logo.png" alt="Logo">
-            </div>
-
-            <ul class="nav-links">
-                <li><a href="dashbord.html">Dashboard</a></li>
-                <li><a href="produits.html">Produits</a></li>
-                <li><a href="clients.html">Clients</a></li>
-                <li><a href="fournisseur.html">Fournisseurs</a></li>
-                <li><a href="achats.html">Achats</a></li>
-                <li class="active"><a href="ventes.html">Ventes</a></li>
-                <li><a href="caisse.html">Caisse</a></li>
-                <li><a href="parameters.html">Paramètres</a></li>
-            </ul>
-
-            <div class="logout-section">
-                <a href="login.html">Déconnexion</a>
-            </div>
-        </nav>
+        <app-sidebar></app-sidebar>
+        <script src="sidebar.js"></script>
 
         <main class="main-content">
             <header class="top-header">
@@ -38,8 +22,8 @@
                     <input type="text" placeholder="Rechercher ventes, clients...">
                 </div>
                 <div class="user-profile">
-                    
-                    
+
+
                 </div>
             </header>
 
@@ -89,7 +73,7 @@
                                 </tr>
                             </thead>
                             <tbody id="saleItemsBody">
-                                </tbody>
+                            </tbody>
                         </table>
 
                         <div class="purchase-footer">
@@ -100,7 +84,7 @@
                             <div class="form-actions">
                                 <button type="submit" class="btn-primary">Valider la Vente</button>
                                 <button type="button" class="btn-warning" onclick="window.print()">
-                                        <i class="print-icon"></i> Imprimer Facture
+                                    <i class="print-icon"></i> Imprimer Facture
                                 </button>
                             </div>
                         </div>
@@ -120,13 +104,14 @@
                             </tr>
                         </thead>
                         <tbody id="recentSalesTable">
-                            </tbody>
+                        </tbody>
                     </table>
-                </div>    
-            </section>    
+                </div>
+            </section>
         </main>
     </div>
 
     <script src="ventes.js"></script>
 </body>
+
 </html>

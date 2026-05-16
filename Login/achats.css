@@ -1,18 +1,15 @@
-.sidebar-logo {
-    padding: 20px; /* Balanced padding */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centers it if the sidebar is wide */
-    gap: 12px;
-}
-
 .sidebar-logo img {
-    width: auto;          /* Maintains aspect ratio */
-    height: 60px;         /* Adjust this value to make it "bigger" */
-    max-width: 100%;      /* Prevents it from breaking the sidebar width */
-    object-fit: contain;  /* Keeps the logo from stretching */
+    width: auto;
+    /* Maintains aspect ratio */
+    height: 60px;
+    /* Adjust this value to make it "bigger" */
+    max-width: 100%;
+    /* Prevents it from breaking the sidebar width */
+    object-fit: contain;
+    /* Keeps the logo from stretching */
     display: block;
 }
+
 /* تنسيقات خاصة بصفحة المشتريات */
 .purchase-card {
     margin-top: 20px;
@@ -38,7 +35,8 @@
     color: #475569;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
     padding: 10px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
@@ -113,27 +111,38 @@
     font-size: 12px;
 }
 
-.status-in-stock { background: #dcfce7; color: #166534; }
-.status-low-stock { background: #fef9c3; color: #854d0e; }
+.status-in-stock {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-low-stock {
+    background: #fef9c3;
+    color: #854d0e;
+}
 
 
 
 
 /* --- تصميم الطباعة الموحد --- */
 @media print {
+
     /* 1. إخفاء كل شيء في الصفحة */
     body * {
         visibility: hidden;
     }
 
     /* 2. إظهار حاوية الفاتورة (سواء كانت مبيعات أو مشتريات) */
-    #purchaseFormContainer, #purchaseFormContainer *,
-    #saleFormContainer, #saleFormContainer * {
+    #purchaseFormContainer,
+    #purchaseFormContainer *,
+    #saleFormContainer,
+    #saleFormContainer * {
         visibility: visible;
     }
 
     /* 3. وضع الحاوية في أعلى الصفحة تماماً */
-    #purchaseFormContainer, #saleFormContainer {
+    #purchaseFormContainer,
+    #saleFormContainer {
         position: absolute;
         left: 0;
         top: 0;
@@ -145,10 +154,14 @@
     }
 
     /* 4. إخفاء الأزرار وعناصر الإدخال التي لا نحتاجها في الورقة */
-    .btn-primary, .btn-warning, .btn-remove, .product-selection-area, 
-    .nav-links, .sidebar, .top-header, .no-print, .logout-section {
-        display: none !important;
-    }
+    .btn-primary,
+    .btn-warning,
+    .btn-remove,
+    .product-selection-area,
+    .nav-links,
+    .sidebar,
+    .top-header,
+    .no-print,
 
     /* 5. تحسين مظهر الجداول في الطباعة */
     .items-table {
@@ -157,14 +170,16 @@
         margin-top: 20px;
     }
 
-    .items-table th, .items-table td {
+    .items-table th,
+    .items-table td {
         border: 1px solid #ddd !important;
         padding: 10px;
         text-align: left;
     }
 
     /* 6. تحويل الحقول النصية (Inputs) لتظهر كنص عادي بدون إطارات */
-    input, select {
+    input,
+    select {
         border: none !important;
         background: transparent !important;
         appearance: none;

@@ -1,34 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bricallerie - Achats</title>
     <link rel="stylesheet" href="dashbord.css">
-    <link rel="stylesheet" href="achats.css"> </head>
+    <link rel="stylesheet" href="achats.css">
+</head>
+
 <body>
 
     <div class="dashboard-wrapper">
-        <nav class="sidebar">
-            <div class="sidebar-logo">
-                <img src="photos/logo.png" alt="Logo">
-            </div>
-
-            <ul class="nav-links">
-                <li><a href="dashbord.html">Dashboard</a></li>
-                <li><a href="produits.html">Produits</a></li>
-                <li><a href="clients.html">Clients</a></li>
-                <li><a href="fournisseur.html">Fournisseurs</a></li>
-                <li class="active"><a href="achats.html">Achats</a></li>
-                <li><a href="ventes.html">Ventes</a></li>
-                <li><a href="caisse.html">Caisse</a></li>
-                <li><a href="parameters.html">Paramètres</a></li>
-            </ul>
-
-            <div class="logout-section">
-                <a href="login.html">Déconnexion</a>
-            </div>
-        </nav>
+        <app-sidebar></app-sidebar>
+        <script src="sidebar.js"></script>
 
         <main class="main-content">
             <header class="top-header">
@@ -36,9 +21,9 @@
                     <input type="text" placeholder="Rechercher achats, fournisseurs...">
                 </div>
                 <div class="user-profile">
-                    
-                    
-                    
+
+
+
                 </div>
             </header>
 
@@ -56,7 +41,7 @@
                                 <label>Fournisseur</label>
                                 <select id="selectFournisseur" required>
                                     <option value="">Sélectionner un fournisseur</option>
-                                    </select>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Date d'achat</label>
@@ -73,7 +58,7 @@
                                 <label>Ajouter des produits</label>
                                 <select id="selectProduct">
                                     <option value="">Sélectionner un produit...</option>
-                                    </select>
+                                </select>
                             </div>
                         </div>
 
@@ -88,7 +73,7 @@
                                 </tr>
                             </thead>
                             <tbody id="purchaseItemsBody">
-                                </tbody>
+                            </tbody>
                         </table>
 
                         <div class="purchase-footer">
@@ -98,14 +83,15 @@
                             </div>
                             <div class="form-actions">
                                 <button type="submit" class="btn-primary">Enregistrer l'achat</button>
-                                <button type="button" class="btn-warning" onclick="window.print()">Imprimer le bon</button>
+                                <button type="button" class="btn-warning" onclick="window.print()">Imprimer le
+                                    bon</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
                 <div class="recent-purchases card" style="margin-top: 30px;">
-                        <h3>Achats récents</h3>
+                    <h3>Achats récents</h3>
                     <table class="main-table">
                         <thead>
                             <tr>
@@ -113,14 +99,16 @@
                                 <th>Fournisseur</th>
                                 <th>Total</th>
                                 <th>Statut</th>
-                                <th>Action</th> </tr>
+                                <th>Action</th>
+                            </tr>
                         </thead>
                         <tbody id="recentPurchasesTable"></tbody>
                     </table>
-                </div>    
+                </div>
             </section>
         </main>
     </div>
     <script src="achats.js"></script>
 </body>
+
 </html>
