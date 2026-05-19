@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const products = await response.json();
             selectProduct.innerHTML = '<option value="">Sélectionner un produit...</option>';
             products.forEach(prod => {
-                selectProduct.innerHTML += `<option value="${prod.id}" data-price="${prod.prix_achat}">${prod.designation}</option>`;
+                selectProduct.innerHTML += `<option value="${prod.id}" data-price="${prod.prix_achat}">${prod.nom_produit}</option>`;
             });
         } catch (error) { console.error("Erreur produits:", error); }
     }
@@ -183,7 +183,7 @@ window.printInvoice = async (id) => {
                     <tbody>
                         ${items.map(item => `
                             <tr>
-                                <td>${item.designation}</td>
+                                <td>${item.nom_produit}</td>
                                 <td>${item.prix_unitaire} DA</td>
                                 <td>${item.quantite}</td>
                                 <td>${(item.prix_unitaire * item.quantite).toFixed(2)} DA</td>

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const products = await response.json();
             selectProduct.innerHTML = '<option value="">Sélectionner un produit...</option>';
             products.forEach(p => {
-                selectProduct.innerHTML += `<option value="${p.id}" data-price="${p.prix_vente}">${p.designation}</option>`;
+                selectProduct.innerHTML += `<option value="${p.id}" data-price="${p.prix_vente}">${p.nom_produit}</option>`;
             });
         } catch (error) { console.error(error); }
     }
@@ -190,7 +190,7 @@ window.printInvoice = async (id) => {
                     </thead>
                     <tbody>
                         ${items.map(i => `<tr>
-                            <td>${i.designation}</td>
+                            <td>${i.nom_produit}</td>
                             <td>${i.prix_unitaire} DA</td>
                             <td>${i.quantite}</td>
                             <td>${(i.prix_unitaire * i.quantite).toFixed(2)} DA</td>

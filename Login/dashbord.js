@@ -1,3 +1,4 @@
+// ===== 1. جلب الإحصائيات العامة (الزبائن) =====
 async function updateDashboardStats() {
     try {
         const response = await fetch('http://localhost:3000/api/stats/clients-trend');
@@ -20,13 +21,16 @@ async function updateDashboardStats() {
             }
         }
     } catch (error) {
-        console.error("Connection Error:", error);
+        console.error("Connection Error (Stats):", error);
     }
 }
 
-document.addEventListener('DOMContentLoaded', updateDashboardStats);
+// تشغيل جلب الإحصائيات عند تحميل واجهة الداشبورد
+document.addEventListener('DOMContentLoaded', () => {
+    updateDashboardStats();
+});
 
-// ===== Chatbot Functionality =====
+// ===== 3. نظام وميكانيكية الـ Chatbot =====
 const chatbotToggle = document.getElementById('chatbotToggle');
 const chatbotContainer = document.querySelector('.chatbot-container');
 const chatbotClose = document.getElementById('chatbotClose');
@@ -34,7 +38,7 @@ const chatbotInput = document.getElementById('chatbotInput');
 const chatbotSend = document.getElementById('chatbotSend');
 const chatbotMessages = document.getElementById('chatbotMessages');
 
-// Toggle Chatbot Visibility
+// فتح وإغلاق نافذة المحادثة
 if (chatbotToggle && chatbotContainer) {
     chatbotToggle.addEventListener('click', () => {
         chatbotContainer.classList.add('active');
@@ -50,7 +54,7 @@ if (chatbotClose && chatbotContainer) {
     });
 }
 
-// Chatbot Responses (Local fallback)
+// قاموس الردود المحلية السريعة (Fallback)
 const chatbotResponses = {
     'مرحبا': 'مرحبا! كيف يمكنني مساعدتك في إدارة المخزون؟',
     'hello': 'Hello! How can I help you with inventory management?',
@@ -72,44 +76,37 @@ const chatbotResponses = {
     'what is your name': 'I am your intelligent assistant for inventory management. My name is Assistant 🤖',
 };
 
-// Function to get AI-like response
+// فحص الردود الجاهزة
 function getChatbotResponse(userMessage) {
     const message = userMessage.toLowerCase().trim();
-    
-    // Check for exact matches first
     for (let key in chatbotResponses) {
         if (message.includes(key)) {
             return chatbotResponses[key];
         }
     }
-    
-    // Default response for unrecognized messages
     const defaultResponses = [
         'معذرة، لم أفهم سؤالك. يمكنك أن تسأل عن: المنتجات، العملاء، المبيعات، المشتريات، الفواتير، أو الموردين.',
         'لا أفهم هذا السؤال. حاول مرة أخرى باستخدام كلمات أخرى.',
         'يمكنك أن تسأل عن ميزات البرنامج أو كيفية استخدام الأقسام المختلفة.',
     ];
-    
     return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
 }
 
-// Send Message to Gemini AI Backend
+// إرسال الرسالة إلى الـ Backend الخاص بـ Gemini AI
 async function sendMessage() {
     const userMessage = chatbotInput.value.trim();
-    
     if (!userMessage) return;
     
-    // 1. Add user message to chat
+    // 1. عرض رسالة المستخدم في الواجهة
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'message user-message';
     userMessageDiv.innerHTML = `<p>${escapeHtml(userMessage)}</p>`;
     chatbotMessages.appendChild(userMessageDiv);
     chatbotInput.value = '';
     
-    // Scroll to bottom
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
-    // 2. Show "Thinking..." indicator
+    // 2. إظهار مؤشر الانتظار والتفكير
     const thinkingDiv = document.createElement('div');
     thinkingDiv.className = 'message bot-message thinking';
     thinkingDiv.innerHTML = `<p>جاري التفكير... 🤖</p>`;
@@ -117,23 +114,20 @@ async function sendMessage() {
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
     try {
-        // 3. Call Backend API
+        // 3. إرسال الطلب إلى سيرفر الذكاء الاصطناعي
         const response = await fetch('http://localhost:3000/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: userMessage
-            })
+            body: JSON.stringify({ message: userMessage })
         });
 
         const data = await response.json();
         
-        // Remove thinking indicator
         if (thinkingDiv && thinkingDiv.parentNode) {
             chatbotMessages.removeChild(thinkingDiv);
         }
 
-        // 4. Display bot response
+        // 4. عرض رد البوت المستلم
         const botMessageDiv = document.createElement('div');
         botMessageDiv.className = 'message bot-message';
         
@@ -155,23 +149,21 @@ async function sendMessage() {
         console.error("Chatbot Error:", error);
     }
     
-    // Scroll to bottom
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 }
 
-// Helper function to escape HTML
+// حماية البيانات المدخلة (Escape HTML)
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// Send message on button click
+// أحداث الإرسال بالنقر أو زر Enter
 if (chatbotSend) {
     chatbotSend.addEventListener('click', sendMessage);
 }
 
-// Send message on Enter key
 if (chatbotInput) {
     chatbotInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {

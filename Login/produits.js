@@ -8,10 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableBody = document.getElementById('productsTableBody');
     const modalTitle = document.querySelector('.modal-content h2');
     const categorySelect = document.getElementById('pCategory'); // عنصر القائمة المنسدلة
+    
+    const fileInput = document.getElementById('pImgInput');
+    const imgPreview = document.getElementById('imgPreview');
 
-    // متغيرات لإدارة وضع التعديل
+    // متغيرات لإدارة وضع التعديل والصور
     let editMode = false;
     let currentProductId = null;
+    let photoBase64 = null;
+    let currentPhotoPath = null;
 
     // --- دالة جديدة لجلب الفئات ديناميكياً من السيرفر ---
     async function loadCategories() {
@@ -33,10 +38,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // استماع لمدخل الملفات وتحويل الصورة إلى Base64
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                photoBase64 = evt.target.result;
+                if (imgPreview) {
+                    imgPreview.src = photoBase64;
+                    imgPreview.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     // 2. إدارة فتح وإغلاق النافذة (Modal)
     btnOpen.onclick = () => {
         resetModalToAddMode();
-        modal.style.display = "block";
+        modal.style.display = "flex";
     };
     btnClose.onclick = () => {
         modal.style.display = "none";
@@ -52,7 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetModalToAddMode() {
         editMode = false;
         currentProductId = null;
+        photoBase64 = null;
+        currentPhotoPath = null;
         modalTitle.innerText = "Nouveau Produit";
+        if (fileInput) fileInput.value = "";
+        if (imgPreview) {
+            imgPreview.src = "";
+            imgPreview.style.display = "none";
+        }
         form.reset();
     }
 
@@ -68,12 +98,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isLow = product.stock_actuel <= product.quantite_min;
                 const statusClass = isLow ? 'status-low-stock' : 'status-in-stock';
                 const statusText = isLow ? 'Stock Faible' : 'En Stock';
+                
+                // تحديد رابط الصورة (افتراضي أو المرفوعة)
+                const photoUrl = product.photo 
+                    ? `http://localhost:3000/${product.photo}` 
+                    : 'https://placehold.co/40x40?text=📦';
 
                 tableBody.innerHTML += `
                     <tr>
-                        <td>
-                            <strong>${product.designation}</strong><br>
-                            <small style="color: #94a3b8">${product.referencee}</small>
+                        <td style="display: flex; align-items: center; gap: 12px; border-bottom: none;">
+                            <img src="${photoUrl}" style="width: 42px; height: 42px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <div>
+                                <strong>${product.nom_produit}</strong><br>
+                                <small style="color: #94a3b8">${product.referencee}</small>
+                            </div>
                         </td>
                         <td>${product.category_name || "Général"}</td>
                         <td>${product.stock_actuel}</td>
@@ -102,13 +140,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const productData = {
             referencee: document.getElementById('pRef').value,
-            designation: document.getElementById('pName').value,
+            nom_produit: document.getElementById('pName').value,
             prix_achat: parseFloat(document.getElementById('pBuyPrice').value),
             prix_vente: parseFloat(document.getElementById('pSellPrice').value),
             stock_actuel: parseInt(document.getElementById('pStock').value),
             quantite_min: parseInt(document.getElementById('pMinStock').value) || 5,
-            // نرسل القيمة كـ null إذا كانت فارغة لتجنب خطأ Foreign Key
-            id_categorie: selectedCategory === "" ? null : parseInt(selectedCategory)
+            id_categorie: selectedCategory === "" ? null : parseInt(selectedCategory),
+            photoBase64: photoBase64,
+            photo: currentPhotoPath
         };
 
         const url = editMode 
@@ -145,20 +184,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const product = await response.json();
 
             document.getElementById('pRef').value = product.referencee;
-            document.getElementById('pName').value = product.designation;
+            document.getElementById('pName').value = product.nom_produit;
             document.getElementById('pBuyPrice').value = product.prix_achat;
             document.getElementById('pSellPrice').value = product.prix_vente;
             document.getElementById('pStock').value = product.stock_actuel;
             document.getElementById('pMinStock').value = product.quantite_min;
             
-            
             // اختيار الفئة الصحيحة في القائمة المنسدلة
             categorySelect.value = product.id_categorie || "";
+
+            // عرض الصورة الحالية إن وجدت
+            currentPhotoPath = product.photo;
+            if (imgPreview && product.photo) {
+                imgPreview.src = `http://localhost:3000/${product.photo}`;
+                imgPreview.style.display = 'block';
+            } else if (imgPreview) {
+                imgPreview.src = "";
+                imgPreview.style.display = 'none';
+            }
 
             editMode = true;
             currentProductId = id;
             modalTitle.innerText = "Modifier le Produit";
-            modal.style.display = "block";
+            modal.style.display = "flex";
         } catch (error) {
             console.error("Erreur:", error);
         }

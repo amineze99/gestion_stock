@@ -1,0 +1,6 @@
+Login/.env
+Login/node_modules/
+Login/photos/
+node_modules/
+.tempmediaStorage/
+*.log

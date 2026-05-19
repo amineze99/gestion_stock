@@ -90,6 +90,7 @@ body {
     margin-top: 30px;
 }
 
+
 .card {
     background: white;
     padding: 25px;
@@ -402,4 +403,34 @@ body {
         bottom: 90px;
         right: 15px;
     }
+}
+
+/* Report Link Buttons inside Bot Messages */
+.bot-message a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white !important;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    margin: 5px 2px 2px 2px;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    transition: all 0.2s ease;
+}
+.bot-message a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, #059669, #047857);
+}
+.bot-message a.pdf-link {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+.bot-message a.pdf-link:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
