@@ -831,15 +831,52 @@ app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${POR
 
 
 
-// جلب الموردين - تأكد أن اسم الجدول في SQL هو fournisseur
-app.get('/api/fournisseur', (req, res) => {
-    const sql = "SELECT * FROM fournisseur"; // تم التغيير للمفرد ليطابق قاعدة بياناتك
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error("خطأ في قاعدة البيانات:", err);
-            return res.status(500).json({ error: "Database error" });
-        }
+// ===== 11. Fournisseurs (Suppliers) CRUD =====
+app.get('/api/suppliers', (req, res) => {
+    db.query("SELECT * FROM fournisseur ORDER BY id DESC", (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error" });
         res.json(results);
+    });
+});
+
+app.post('/api/suppliers', (req, res) => {
+    const { nom, contact, tel, email, total_solde, rc, nif, ai, nis } = req.body;
+    const sql = "INSERT INTO fournisseur (nom, contact, tel, email, total_solde, rc, nif, ai, nis) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    db.query(sql, [nom, contact, tel, email, total_solde || 0, rc, nif, ai, nis], (err, result) => {
+        if (err) {
+            console.error("Erreur Add Supplier:", err);
+            return res.status(500).json({ success: false, error: "تعذر إضافة المورد" });
+        }
+        res.json({ success: true, id: result.insertId });
+    });
+});
+
+app.put('/api/suppliers/:id', (req, res) => {
+    const { nom, contact, tel, email, total_solde, rc, nif, ai, nis } = req.body;
+    const supplierId = req.params.id;
+
+    const sql = "UPDATE fournisseur SET nom = ?, contact = ?, tel = ?, email = ?, total_solde = ?, rc = ?, nif = ?, ai = ?, nis = ? WHERE id = ?";
+    
+    db.query(sql, [nom, contact, tel, email, total_solde || 0, rc, nif, ai, nis, supplierId], (err) => {
+        if (err) {
+            console.error("Erreur Update Supplier:", err);
+            return res.status(500).json({ success: false, message: "تعذر تحديث البيانات" });
+        }
+        res.json({ success: true });
+    });
+});
+
+app.delete('/api/suppliers/:id', (req, res) => {
+    const supplierId = req.params.id;
+    const sql = "DELETE FROM fournisseur WHERE id = ?";
+    
+    db.query(sql, [supplierId], (err) => {
+        if (err) {
+            console.error("Erreur Delete Supplier:", err);
+            return res.status(500).json({ success: false, message: "تعذر الحذف" });
+        }
+        res.json({ success: true });
     });
 });
 

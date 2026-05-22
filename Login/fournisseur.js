@@ -28,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 contact: document.getElementById('suppContact').value,
                 tel: document.getElementById('suppTel').value,
                 email: document.getElementById('suppEmail').value,
+                rc: document.getElementById('suppRC').value,
+                nif: document.getElementById('suppNIF').value,
+                ai: document.getElementById('suppAI').value,
+                nis: document.getElementById('suppNIS').value,
                 total_solde: parseFloat(document.getElementById('suppTotal').value) || 0
             };
 
@@ -90,7 +94,8 @@ function renderSuppliers(suppliers) {
                     <div class="supp-icon" style="background:#f5f3ff; color:#7c3aed; padding:8px; border-radius:8px;">💜</div> 
                     <div>
                         <strong style="display:block;">${s.nom}</strong>
-                        <small style="color:#64748b">ID: #SUP-${s.id}</small>
+                        <small style="color:#64748b">ID: #SUP-${s.id} | RC: ${s.rc || '--'} | NIF: ${s.nif || '--'}</small><br>
+                        <small style="color:#64748b">AI: ${s.ai || '--'} | NIS: ${s.nis || '--'}</small>
                         <p style="font-size:11px; color:#64748b">📅 Added on: ${dateAdded}</p>
                     </div>
                 </div>
@@ -98,8 +103,6 @@ function renderSuppliers(suppliers) {
             <td>${s.contact || '---'}</td>
             <td>📞 ${s.tel || '---'}</td>
             <td>✉️ ${s.email || '---'}</td>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; font-size: 11px; color: #475569;">
-                    
             <td><span class="badge" style="background:#f1f5f9; padding:4px 8px; border-radius:12px;">0</span></td> 
             <td><strong style="color:#2563eb">${s.total_solde} DA</strong></td>
             <td class="action-btns">
@@ -142,6 +145,10 @@ window.openEditModal = function(id) {
     document.getElementById('editSuppContact').value = supplier.contact || '';
     document.getElementById('editSuppTel').value = supplier.tel || '';
     document.getElementById('editSuppEmail').value = supplier.email || '';
+    document.getElementById('editSuppRC').value = supplier.rc || '';
+    document.getElementById('editSuppNIF').value = supplier.nif || '';
+    document.getElementById('editSuppAI').value = supplier.ai || '';
+    document.getElementById('editSuppNIS').value = supplier.nis || '';
     document.getElementById('editSuppTotal').value = supplier.total_solde || 0;
     
     document.getElementById('editSupplierModal').style.display = "block";
@@ -165,7 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 contact: document.getElementById('editSuppContact').value,
                 tel: document.getElementById('editSuppTel').value,
                 email: document.getElementById('editSuppEmail').value,
-                solde_a_payer: parseFloat(document.getElementById('editSuppTotal').value) || 0
+                rc: document.getElementById('editSuppRC').value,
+                nif: document.getElementById('editSuppNIF').value,
+                ai: document.getElementById('editSuppAI').value,
+                nis: document.getElementById('editSuppNIS').value,
+                total_solde: parseFloat(document.getElementById('editSuppTotal').value) || 0
             };
 
             try {
