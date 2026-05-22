@@ -88,6 +88,13 @@
                                 <input type="date" id="paymentDate" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" required>
                             </div>
 
+                            <input type="hidden" id="transactionId" value="">
+                            <div id="editModeActions" style="display: none; margin-bottom: 15px;">
+                                <button type="button" id="cancelEditBtn" class="btn-secondary" style="width: 100%; padding: 12px; font-weight: bold; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                    Annuler la modification
+                                </button>
+                            </div>
+
                             <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-weight: bold; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">
                                 Valider le règlement
                             </button>
@@ -106,6 +113,7 @@
                                     <th>Méthode</th>
                                     <th>N° Réf</th>
                                     <th>Montant</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="transactionsTableBody">

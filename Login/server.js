@@ -120,23 +120,26 @@ app.delete('/api/clients/:id', (req, res) => {
 app.delete('/api/ventes/:id', (req, res) => {
     const opId = req.params.id;
 
-    // الحذف من جدول Operation سيقوم بـ:
-    // 1. حذف التفاصيل من Details_Operation (بسبب ON DELETE CASCADE في الداتابايز)
-    // 2. تفعيل الـ Trigger لإرجاع الستوك وتعديل صولد الكليون
-    const sql = "DELETE FROM Operation WHERE id = ?";
-    
-    db.query(sql, [opId], (err, result) => {
+    // حذف تفاصيل العملية أولاً ثم العملية نفسها
+    db.query("DELETE FROM Details_Operation WHERE id_operation = ?", [opId], (err) => {
         if (err) {
-            console.error("خطأ أثناء حذف المبيعة:", err);
-            return res.status(500).json({ success: false, message: "Erreur SQL" });
+            console.error("خطأ أثناء حذف تفاصيل المبيعة:", err);
+            return res.status(500).json({ success: false, message: "Erreur SQL details" });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: "Vente non trouvée" });
-        }
+        db.query("DELETE FROM Operation WHERE id = ?", [opId], (err2, result) => {
+            if (err2) {
+                console.error("خطأ أثناء حذف المبيعة:", err2);
+                return res.status(500).json({ success: false, message: "Erreur SQL operation" });
+            }
 
-        console.log(`تم حذف المبيعة رقم ${opId} بنجاح`);
-        res.json({ success: true, message: "Supprimé avec succès" });
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ success: false, message: "Vente non trouvée" });
+            }
+
+            console.log(`تم حذف المبيعة رقم ${opId} بنجاح`);
+            res.json({ success: true, message: "Supprimé avec succès" });
+        });
     });
 });
 
@@ -945,6 +948,56 @@ app.get('/api/transactions', (req, res) => {
         if (err) return res.status(500).json({ error: "Database error", details: err });
         res.json(results);
     });
+});
+
+app.put('/api/transactions/:id', async (req, res) => {
+    const id = req.params.id;
+    const { type_entite, entite_id, type_paiement, montant, num_cheque, date_transaction } = req.body;
+
+    try {
+        const [rows] = await db.promise().query('SELECT * FROM transactions WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Transaction non trouvée' });
+        }
+
+        const oldTx = rows[0];
+        const oldTable = oldTx.type_entite === 'client' ? 'client' : 'fournisseur';
+        await db.promise().query(`UPDATE ${oldTable} SET total_solde = total_solde + ? WHERE id = ?`, [oldTx.montant, oldTx.entite_id]);
+
+        await db.promise().query(
+            `UPDATE transactions SET type_entite = ?, entite_id = ?, type_paiement = ?, montant = ?, num_cheque = ?, date_transaction = ? WHERE id = ?`,
+            [type_entite, entite_id, type_paiement, montant, num_cheque, date_transaction, id]
+        );
+
+        const newTable = type_entite === 'client' ? 'client' : 'fournisseur';
+        await db.promise().query(`UPDATE ${newTable} SET total_solde = total_solde - ? WHERE id = ?`, [montant, entite_id]);
+
+        res.json({ success: true, message: 'Transaction mise à jour' });
+    } catch (err) {
+        console.error('Erreur de mise à jour transaction:', err);
+        res.status(500).json({ error: 'Database error', details: err });
+    }
+});
+
+app.delete('/api/transactions/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const [rows] = await db.promise().query('SELECT * FROM transactions WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Transaction non trouvée' });
+        }
+
+        const tx = rows[0];
+        const table = tx.type_entite === 'client' ? 'client' : 'fournisseur';
+        await db.promise().query(`UPDATE ${table} SET total_solde = total_solde + ? WHERE id = ?`, [tx.montant, tx.entite_id]);
+        await db.promise().query('DELETE FROM transactions WHERE id = ?', [id]);
+
+        res.json({ success: true, message: 'Transaction supprimée' });
+    } catch (err) {
+        console.error('Erreur de suppression transaction:', err);
+        res.status(500).json({ error: 'Database error', details: err });
+    }
 });
 
 // ===== 10. BI Dashboard Endpoints =====

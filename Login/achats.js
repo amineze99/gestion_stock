@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!recentPurchasesTable) return;
             recentPurchasesTable.innerHTML = "";
 
-            if (achats.length === 0) {
-                recentPurchasesTable.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Aucun achat enregistré</td></tr>";
+            if (!Array.isArray(achats) || achats.length === 0) {
+                recentPurchasesTable.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#64748b;'>Aucun achat enregistré</td></tr>";
                 return;
             }
 
@@ -38,7 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </td>
                     </tr>`;
             });
-        } catch (error) { console.error("Erreur chargement achats:", error); }
+        } catch (error) {
+            console.error("Erreur chargement achats:", error);
+            if (recentPurchasesTable) {
+                recentPurchasesTable.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Erreur de chargement des achats</td></tr>`;
+            }
+        }
     };
 
     // جلب الموردين

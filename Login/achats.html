@@ -90,8 +90,8 @@
                     </form>
                 </div>
 
-                <div class="recent-purchases card" style="margin-top: 30px;">
-                    <h3>Achats récents</h3>
+                <div class="card" style="margin-top: 30px; min-height: auto;">
+                    <h3 style="margin-bottom: 15px;">Achats récents</h3>
                     <table class="main-table">
                         <thead>
                             <tr>
@@ -102,7 +102,11 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="recentPurchasesTable"></tbody>
+                        <tbody id="recentPurchasesTable">
+                            <tr>
+                                <td colspan="5" style="text-align:center; color:#64748b;">Chargement des achats...</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </section>

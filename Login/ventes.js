@@ -1,4 +1,3 @@
-let loadRecentVentes;
 let cart = []; // مصفوفة السلة
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,32 +6,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectClient = document.getElementById('selectClient');
     const grandTotalElement = document.getElementById('grandTotal');
     const saleForm = document.getElementById('saleForm');
-    const recentSalesTable = document.getElementById('recentSalesTable');
+    const salesTableBody = document.getElementById('salesTableBody');
 
     // 1. جلب المبيعات الأخيرة وتحديث الجدول
-    loadRecentVentes = async function() {
+    async function loadRecentSales() {
+        if (!salesTableBody) return;
+
         try {
             const response = await fetch('http://localhost:3000/api/recent-ventes');
-            const ventes = await response.json();
-            if (!recentSalesTable) return;
-            
-            recentSalesTable.innerHTML = "";
-            ventes.forEach(v => {
-                const dateStr = new Date(v.date_op).toLocaleDateString('fr-FR');
-                recentSalesTable.innerHTML += `
+            const salesData = await response.json();
+
+            salesTableBody.innerHTML = "";
+
+            if (!Array.isArray(salesData) || salesData.length === 0) {
+                salesTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">Aucune vente récente trouvée</td></tr>`;
+                return;
+            }
+
+            salesData.forEach(sale => {
+                const dateObj = new Date(sale.date_op || sale.date_vente || sale.date_transaction);
+                const dateStr = isNaN(dateObj) ? '-' : dateObj.toLocaleDateString('fr-FR');
+                const clientName = sale.client || sale.client_nom || sale.entite_nom || 'Client inconnu';
+                const totalAmount = parseFloat(sale.montant_total || sale.total || sale.montant || 0).toFixed(2);
+
+                const statusBadge = `<span class="badge" style="background:#e8fdf4; color:#10b981; padding:6px 12px; border-radius:12px; font-size:13px; font-weight:500;">Payé</span>`;
+
+                const actionButtons = `
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-action-print" onclick="printSale(${sale.id})" style="background: #eef2f6; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: #475569;">
+                            🖨️
+                        </button>
+                        <button class="btn-action-delete" onclick="deleteSale(${sale.id})" style="background: #ffeeef; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: #ef4444;">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+
+                salesTableBody.innerHTML += `
                     <tr>
                         <td>${dateStr}</td>
-                        <td>${v.client}</td>
-                        <td>${v.montant_total} DA</td>
-                        <td><span class="status-badge status-in-stock">Payé</span></td>
-                        <td>
-                            <button class="btn-print-sm" onclick="printInvoice(${v.id})" title="Imprimer">🖨️</button>
-                            <button class="btn-remove" onclick="deleteVente(${v.id})" title="Supprimer">🗑️</button>
-                        </td>
+                        <td><strong>${clientName}</strong></td>
+                        <td>${totalAmount} DA</td>
+                        <td>${statusBadge}</td>
+                        <td>${actionButtons}</td>
                     </tr>`;
             });
-        } catch (error) { console.error("Erreur:", error); }
-    };
+        } catch (error) {
+            console.error("Erreur de chargement des ventes:", error);
+            salesTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Erreur de chargement des ventes</td></tr>`;
+        }
+    }
 
     // 2. جلب العملاء
     async function loadClients() {
@@ -120,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 cart = []; renderCart(); saleForm.reset();
                 setupAutoFields(); // إعادة تعيين التاريخ والرقم العشوائي
-                loadRecentVentes();
+                loadRecentSales();
             } else {
                 const errorData = await response.json();
                 alert("Erreur: " + errorData.message);
@@ -138,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // تشغيل الدوال الأساسية
-    loadClients(); loadProducts(); loadRecentVentes(); setupAutoFields();
+    loadClients(); loadProducts(); loadRecentSales(); setupAutoFields();
 });
 
 // --- الدوال العالمية (خارج DOMContentLoaded) ---
@@ -149,7 +172,7 @@ window.deleteVente = async (id) => {
         try {
             const response = await fetch(`http://localhost:3000/api/ventes/${id}`, { method: 'DELETE' });
             if (response.ok) {
-                loadRecentVentes(); 
+                loadRecentSales(); 
             } else {
                 alert("Erreur lors de la suppression");
             }
@@ -204,4 +227,12 @@ window.printInvoice = async (id) => {
         `);
         printWindow.document.close();
     } catch (error) { console.error("Erreur impression:", error); }
+};
+
+window.printSale = function(id) {
+    printInvoice(id);
+};
+
+window.deleteSale = function(id) {
+    deleteVente(id);
 };

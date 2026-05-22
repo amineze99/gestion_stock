@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const statEncaissements = document.getElementById('stat-encaissements');
     const statDecaissements = document.getElementById('stat-decaissements');
 
+    const apiBase = window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : 'http://localhost:3000';
+
     // Left form
     const entityTypeSelector = document.getElementById('entityTypeSelector');
     const entitySelector = document.getElementById('entitySelector');
@@ -16,8 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Right table
     const transactionsTableBody = document.getElementById('transactionsTableBody');
+    const transactionIdInput = document.getElementById('transactionId');
+    const editModeActions = document.getElementById('editModeActions');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const submitButton = transactionForm.querySelector('button[type="submit"]');
 
     let currentEntities = [];
+    let transactionsData = [];
+    let editMode = false;
 
     // 1. Initial Setup
     paymentDate.value = new Date().toISOString().split('T')[0];
@@ -50,11 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Load Entities (Clients or Fournisseurs)
     async function loadEntities(type) {
         let endpoint = (type === "fournisseur") ? 
-            "http://localhost:3000/api/suppliers" : 
-            "http://localhost:3000/api/clients";
+            "/api/suppliers" : 
+            "/api/clients";
 
         try {
-            const response = await fetch(endpoint);
+            const response = await fetch(`${apiBase}${endpoint}`);
             currentEntities = await response.json();
             
             entitySelector.innerHTML = '<option value="">Sélectionnez une entité...</option>';
@@ -71,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Load Transactions History & Stats
     async function loadTransactions() {
         try {
-            const response = await fetch('http://localhost:3000/api/transactions');
+            const response = await fetch(`${apiBase}/api/transactions`);
             const data = await response.json();
 
             let totalEncaissements = 0;
@@ -106,6 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${t.type_paiement}</td>
                         <td>${t.num_cheque || '--'}</td>
                         <td><strong style="color: ${amountColor};">${amountPrefix}${t.montant} DA</strong></td>
+                        <td>
+                            <button type="button" class="btn-action" style="margin-right: 6px; padding: 6px 10px; border-radius: 8px; border: 1px solid #2563eb; background:#eef2ff; color:#2563eb; cursor:pointer;" onclick="window.startEditTransaction(${t.id})">Modifier</button>
+                            <button type="button" class="btn-action" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #dc2626; background:#fee2e2; color:#b91c1c; cursor:pointer;" onclick="window.deleteTransaction(${t.id})">Supprimer</button>
+                        </td>
                     </tr>
                 `;
             });
@@ -114,15 +128,112 @@ document.addEventListener('DOMContentLoaded', () => {
             if(statEncaissements) statEncaissements.innerText = totalEncaissements.toFixed(2) + ' DA';
             if(statDecaissements) statDecaissements.innerText = totalDecaissements.toFixed(2) + ' DA';
 
+            transactionsData = data;
             if (data.length === 0) {
-                transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b;">Aucune transaction trouvée</td></tr>`;
+                transactionsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b;">Aucune transaction trouvée</td></tr>`;
             }
 
         } catch (error) {
             console.error("Erreur de chargement des transactions:", error);
-            transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Erreur de connexion</td></tr>`;
+            transactionsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Erreur de connexion</td></tr>`;
         }
     }
+
+    function setEditMode(enabled) {
+        editMode = enabled;
+        if (enabled) {
+            editModeActions.style.display = 'block';
+            submitButton.textContent = 'Mettre à jour le règlement';
+        } else {
+            editModeActions.style.display = 'none';
+            submitButton.textContent = 'Valider le règlement';
+            transactionIdInput.value = '';
+        }
+    }
+
+    function resetForm() {
+        transactionForm.reset();
+        paymentDate.value = new Date().toISOString().split('T')[0];
+        paymentType.dispatchEvent(new Event('change'));
+        transactionIdInput.value = '';
+        setEditMode(false);
+        if (entityTypeSelector.value) loadEntities(entityTypeSelector.value);
+    }
+
+    function startEditTransaction(id) {
+        const transaction = transactionsData.find(t => t.id === id);
+        if (!transaction) {
+            alert('Transaction introuvable. Veuillez recharger la page.');
+            return;
+        }
+
+        transactionIdInput.value = transaction.id;
+        entityTypeSelector.value = transaction.type_entite;
+        loadEntities(transaction.type_entite).then(() => {
+            entitySelector.value = transaction.entite_id;
+            const selected = currentEntities.find(ent => ent.id === transaction.entite_id);
+            currentSolde.value = (selected ? selected.total_solde : 0) + ' DA';
+        });
+
+        paymentType.value = transaction.type_paiement;
+        paymentType.dispatchEvent(new Event('change'));
+        paymentAmount.value = transaction.montant;
+        numCheque.value = transaction.num_cheque || '';
+        paymentDate.value = transaction.date_transaction ? transaction.date_transaction.split('T')[0] : transaction.date_transaction;
+
+        setEditMode(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function updateTransaction(id, payload) {
+        try {
+            const response = await fetch(`${apiBase}/api/transactions/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                alert('❌ Erreur serveur: ' + (result.error || result.message || 'Erreur inconnue'));
+                return false;
+            }
+            alert('✅ Transaction mise à jour avec succès !');
+            return true;
+        } catch (error) {
+            console.error('Network Error:', error);
+            alert('❌ Impossible de contacter le serveur.');
+            return false;
+        }
+    }
+
+    async function deleteTransaction(id) {
+        if (!confirm('Confirmez-vous la suppression de cette transaction ?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBase}/api/transactions/${id}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                alert('❌ Erreur serveur: ' + (result.error || result.message || 'Erreur inconnue'));
+                return;
+            }
+            alert('✅ Transaction supprimée.');
+            resetForm();
+            loadEntities(entityTypeSelector.value);
+            loadTransactions();
+        } catch (error) {
+            console.error('Network Error:', error);
+            alert('❌ Impossible de contacter le serveur.');
+        }
+    }
+
+    cancelEditBtn.addEventListener('click', resetForm);
+
+    window.startEditTransaction = startEditTransaction;
+    window.deleteTransaction = deleteTransaction;
 
     // 5. Submit Transaction
     transactionForm.onsubmit = async (e) => {
@@ -148,26 +259,35 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/transactions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert("✅ Règlement enregistré avec succès!");
-                
-                // Reset form partially
-                paymentAmount.value = '';
-                numCheque.value = '';
-                
-                // Reload data to reflect new balances and history
-                loadEntities(entityTypeSelector.value); // Will also reset currentSolde
-                loadTransactions();
+            if (editMode && transactionIdInput.value) {
+                const success = await updateTransaction(transactionIdInput.value, payload);
+                if (success) {
+                    resetForm();
+                    loadTransactions();
+                    loadEntities(entityTypeSelector.value);
+                }
             } else {
-                alert("❌ Erreur serveur: " + (result.error || result.message || "Erreur inconnue"));
+                const response = await fetch(`${apiBase}/api/transactions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("✅ Règlement enregistré avec succès!");
+                    
+                    // Reset form partially
+                    paymentAmount.value = '';
+                    numCheque.value = '';
+                    
+                    // Reload data to reflect new balances and history
+                    loadEntities(entityTypeSelector.value); // Will also reset currentSolde
+                    loadTransactions();
+                } else {
+                    alert("❌ Erreur serveur: " + (result.error || result.message || "Erreur inconnue"));
+                }
             }
         } catch (error) {
             console.error("Network Error:", error);

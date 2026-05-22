@@ -94,7 +94,6 @@ function renderSuppliers(suppliers) {
                     <div class="supp-icon" style="background:#f5f3ff; color:#7c3aed; padding:8px; border-radius:8px;">💜</div> 
                     <div>
                         <strong style="display:block;">${s.nom}</strong>
-                        <small style="color:#64748b">RC: ${s.rc || '--'} | NIF: ${s.nif || '--'} | AI: ${s.ai || '--'} | NIS: ${s.nis || '--'}</small>
                         <p style="font-size:11px; color:#64748b">📅 Added on: ${dateAdded}</p>
                     </div>
                 </div>

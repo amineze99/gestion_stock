@@ -121,7 +121,35 @@
     color: #854d0e;
 }
 
+/* Table Design Sync */
+.main-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 10px;
+}
 
+.main-table th {
+    color: #475569;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.main-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    vertical-align: middle;
+}
+
+.main-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.main-table tbody tr td {
+    white-space: nowrap;
+}
 
 
 /* --- تصميم الطباعة الموحد --- */
