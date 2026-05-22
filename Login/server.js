@@ -21,10 +21,10 @@ app.use('/photos', express.static(path.join(__dirname, 'photos')));
 
 // --- 2. الاتصال بقاعدة البيانات ---
 const db = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '', 
-    database: 'gestion_stock' 
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '', 
+    database: process.env.DB_NAME || 'gestion_stock' 
 });
 
 db.connect((err) => {
@@ -371,10 +371,10 @@ if (geminiApiKey) {
 }
 
 const chatPool = mysql2Promise.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'gestion_stock',
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '',
+    database: process.env.DB_NAME || 'gestion_stock',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -433,7 +433,10 @@ Règles de fonctionnement :
      <a href="http://localhost:3000/api/reports/download?format=xlsx&period=annual" target="_blank">📊 Rapport Annuel (Excel)</a>
      <a href="http://localhost:3000/api/reports/download?format=html&print=true&period=annual" target="_blank" class="pdf-link">📄 Rapport Annuel (PDF)</a>
 
-5. Restez professionnel, poli, clair et concis. Ne montrez pas la requête SQL brute dans votre réponse finale à moins qu'on ne vous le demande.`;
+5. Restez professionnel, poli, clair et concis. Ne montrez pas la requête SQL brute dans votre réponse finale à moins qu'on ne vous le demande.
+
+6. RÉPONDEZ À TOUTES LES QUESTIONS SANS EXCEPTION, QUEL QUE SOIT LE CONTEXTE DE LA QUESTION :
+   Si la question de l'utilisateur est d'ordre général, théorique, concerne des conseils commerciaux, de l'aide à la gestion de son commerce, de la rédaction de courriels, des calculs généraux, ou tout autre sujet ne nécessitant pas d'interroger la base de données de manière directe, RÉPONDEZ-Y DIRECTEMENT ET CHALEUREUSEMENT avec vos connaissances approfondies d'intelligence artificielle. Dans ce cas, NE GÉNÉREZ PAS de préfixe [SQL_QUERY]. Aidez l'utilisateur au maximum sans aucune restriction !`;
 
 app.post('/api/chat', async (req, res) => {
     try {
