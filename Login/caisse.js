@@ -1,108 +1,150 @@
-// تعريف الدالة بطريقة تضمن أن المتصفح يراها من أي مكان
-window.openPaymentModal = function(id, nom, solde, type) {
-    console.log("فتح النافذة لـ:", nom, "ID:", id); // سطر للتأكد في الـ Console
-    
-    const modal = document.getElementById('transactionModal');
-    if (!modal) {
-        console.error("لم يتم العثور على transactionModal في الـ HTML");
-        return;
-    }
-
-    document.getElementById('selectedEntityId').value = id;
-    document.getElementById('selectedEntityType').value = type;
-    document.getElementById('entityDisplayName').value = nom;
-    document.getElementById('paymentAmount').value = solde;
-    document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
-    
-    modal.style.display = "block";
-};
-
 document.addEventListener('DOMContentLoaded', () => {
+    // Top stats
+    const statEncaissements = document.getElementById('stat-encaissements');
+    const statDecaissements = document.getElementById('stat-decaissements');
+
+    // Left form
+    const entityTypeSelector = document.getElementById('entityTypeSelector');
     const entitySelector = document.getElementById('entitySelector');
-    const entityGrid = document.getElementById('entityGrid');
+    const currentSolde = document.getElementById('currentSolde');
     const paymentType = document.getElementById('paymentType');
     const chequeDetails = document.getElementById('chequeDetails');
-    const transactionModal = document.getElementById('transactionModal');
-    const closeModal = document.querySelector('.close-btn');
+    const paymentAmount = document.getElementById('paymentAmount');
+    const numCheque = document.getElementById('numCheque');
+    const paymentDate = document.getElementById('paymentDate');
     const transactionForm = document.getElementById('transactionForm');
 
-    // 1. تحديث البيانات عند تغيير "الزبون/المورد"
-    if (entitySelector) {
-        entitySelector.addEventListener('change', loadEntities);
-    }
+    // Right table
+    const transactionsTableBody = document.getElementById('transactionsTableBody');
 
-    async function loadEntities() {
-        const type = entitySelector.value; 
+    let currentEntities = [];
+
+    // 1. Initial Setup
+    paymentDate.value = new Date().toISOString().split('T')[0];
+    loadEntities(entityTypeSelector.value);
+    loadTransactions();
+
+    // 2. Event Listeners
+    entityTypeSelector.addEventListener('change', (e) => {
+        loadEntities(e.target.value);
+    });
+
+    entitySelector.addEventListener('change', (e) => {
+        const selectedId = parseInt(e.target.value);
+        const entity = currentEntities.find(ent => ent.id === selectedId);
+        if (entity) {
+            currentSolde.value = (entity.total_solde || 0) + ' DA';
+        } else {
+            currentSolde.value = '0 DA';
+        }
+    });
+
+    paymentType.addEventListener('change', (e) => {
+        if (e.target.value === 'Chèque' || e.target.value === 'Virement') {
+            chequeDetails.style.display = 'block';
+        } else {
+            chequeDetails.style.display = 'none';
+        }
+    });
+
+    // 3. Load Entities (Clients or Fournisseurs)
+    async function loadEntities(type) {
         let endpoint = (type === "fournisseur") ? 
             "http://localhost:3000/api/suppliers" : 
             "http://localhost:3000/api/clients";
 
         try {
             const response = await fetch(endpoint);
-            const data = await response.json();
-            renderEntities(data, type);
-        } catch (error) {
-            console.error("خطأ في جلب البيانات:", error);
-            entityGrid.innerHTML = `<p style="color:red">Erreur de connexion au serveur</p>`;
-        }
-    }
-});
-    // 2. عرض البطاقات (تعديل بسيط في كود الزر)
-    function renderEntities(data, type) {
-        if (!data || data.length === 0) {
-            entityGrid.innerHTML = `<p>Aucun ${type} trouvé.</p>`;
-            return;
-        }
-
-        entityGrid.innerHTML = data.map(item => {
-            const soldeValue = item.total_solde || 0;
-            // تأكد من تمرير الاسم بشكل آمن
-            const safeNom = item.nom.replace(/'/g, "\\'");
+            currentEntities = await response.json();
             
-            return `
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <p>${type.toUpperCase()} #${item.id}</p>
-                        <h2 style="font-size: 18px;">${item.nom}</h2>
-                        <div class="solde-info">
-                            Solde: <strong style="color: ${soldeValue > 0 ? '#ef4444' : '#10b981'}">
-                                ${soldeValue} DA
-                            </strong>
-                        </div>
-                        <button class="btn-warning" style="margin-top:15px; width:100%; font-size:12px;" 
-                            onclick="openPaymentModal(${item.id}, '${safeNom}', ${soldeValue}, 'fournisseur')">
-                            Régler Solde
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+            entitySelector.innerHTML = '<option value="">Sélectionnez une entité...</option>';
+            currentEntities.forEach(item => {
+                entitySelector.innerHTML += `<option value="${item.id}">${item.nom}</option>`;
+            });
+            currentSolde.value = '0 DA'; // Reset solde
+        } catch (error) {
+            console.error("Erreur de chargement des entités:", error);
+            entitySelector.innerHTML = '<option value="">Erreur de chargement</option>';
+        }
     }
 
-    // 3. إرسال البيانات
-    // 3. إرسال البيانات (المعدل والمحسن)
-if (transactionForm) {
+    // 4. Load Transactions History & Stats
+    async function loadTransactions() {
+        try {
+            const response = await fetch('http://localhost:3000/api/transactions');
+            const data = await response.json();
+
+            let totalEncaissements = 0;
+            let totalDecaissements = 0;
+
+            transactionsTableBody.innerHTML = "";
+            
+            data.forEach(t => {
+                // Calculate Stats
+                if (t.type_entite === 'client') {
+                    totalEncaissements += parseFloat(t.montant) || 0;
+                } else if (t.type_entite === 'fournisseur') {
+                    totalDecaissements += parseFloat(t.montant) || 0;
+                }
+
+                // Render Row
+                const dateObj = new Date(t.date_transaction);
+                const dateStr = dateObj.toLocaleDateString('fr-FR');
+                
+                const typeBadge = t.type_entite === 'client' 
+                    ? '<span class="badge" style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:12px; font-size:12px;">Entrée (Client)</span>'
+                    : '<span class="badge" style="background:#fee2e2; color:#991b1b; padding:4px 8px; border-radius:12px; font-size:12px;">Sortie (Fourn.)</span>';
+
+                const amountColor = t.type_entite === 'client' ? '#10b981' : '#ef4444';
+                const amountPrefix = t.type_entite === 'client' ? '+' : '-';
+
+                transactionsTableBody.innerHTML += `
+                    <tr>
+                        <td>${dateStr}</td>
+                        <td>${typeBadge}</td>
+                        <td><strong>${t.entite_nom || 'Inconnu'}</strong></td>
+                        <td>${t.type_paiement}</td>
+                        <td>${t.num_cheque || '--'}</td>
+                        <td><strong style="color: ${amountColor};">${amountPrefix}${t.montant} DA</strong></td>
+                    </tr>
+                `;
+            });
+
+            // Update Top Stats Cards
+            if(statEncaissements) statEncaissements.innerText = totalEncaissements.toFixed(2) + ' DA';
+            if(statDecaissements) statDecaissements.innerText = totalDecaissements.toFixed(2) + ' DA';
+
+            if (data.length === 0) {
+                transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b;">Aucune transaction trouvée</td></tr>`;
+            }
+
+        } catch (error) {
+            console.error("Erreur de chargement des transactions:", error);
+            transactionsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Erreur de connexion</td></tr>`;
+        }
+    }
+
+    // 5. Submit Transaction
     transactionForm.onsubmit = async (e) => {
         e.preventDefault();
 
-        // جلب العناصر للتأكد من وجودها
-        const amountEl = document.getElementById('paymentAmount');
-        const entityIdEl = document.getElementById('selectedEntityId');
-        const entityTypeEl = document.getElementById('selectedEntityType');
+        if (!entitySelector.value) {
+            alert("Veuillez sélectionner une entité.");
+            return;
+        }
 
-        // التحقق من القيم قبل الإرسال لتجنب Database Error
-        if (!amountEl.value || parseFloat(amountEl.value) <= 0) {
-            alert("الرجاء إدخال مبلغ صحيح");
+        if (!paymentAmount.value || parseFloat(paymentAmount.value) <= 0) {
+            alert("Veuillez entrer un montant valide.");
             return;
         }
 
         const payload = {
-            type_entite: entityTypeEl.value,
-            entite_id: parseInt(entityIdEl.value), // تحويل لعدد صحيح
-            type_paiement: document.getElementById('paymentType').value,
-            montant: parseFloat(amountEl.value),
-            num_cheque: document.getElementById('numCheque').value || null,
-            date_transaction: document.getElementById('paymentDate').value
+            type_entite: entityTypeSelector.value,
+            entite_id: parseInt(entitySelector.value),
+            type_paiement: paymentType.value,
+            montant: parseFloat(paymentAmount.value),
+            num_cheque: numCheque.value || null,
+            date_transaction: paymentDate.value
         };
 
         try {
@@ -112,28 +154,24 @@ if (transactionForm) {
                 body: JSON.stringify(payload)
             });
 
-            // قراءة محتوى الاستجابة حتى لو كان هناك خطأ
             const result = await response.json();
 
             if (response.ok) {
-                alert("✅ " + (result.message || "تم التسجيل بنجاح"));
+                alert("✅ Règlement enregistré avec succès!");
                 
-                // إخفاء المودال بطريقة آمنة
-                transactionModal.style.display = "none";
-                transactionForm.reset();
+                // Reset form partially
+                paymentAmount.value = '';
+                numCheque.value = '';
                 
-                // تحديث البيانات في الصفحة
-                if (typeof loadEntities === "function") {
-                    loadEntities();
-                }
+                // Reload data to reflect new balances and history
+                loadEntities(entityTypeSelector.value); // Will also reset currentSolde
+                loadTransactions();
             } else {
-                // إذا أرجع السيرفر Database error، ستظهر هنا التفاصيل
-                alert("❌ فشل في السيرفر: " + (result.error || "Database Error"));
-                console.error("Server Error Details:", result);
+                alert("❌ Erreur serveur: " + (result.error || result.message || "Erreur inconnue"));
             }
         } catch (error) {
             console.error("Network Error:", error);
-            alert("❌ تعذر الاتصال بالسيرفر. تأكد أن السيرفر (Node.js) يعمل.");
+            alert("❌ Impossible de contacter le serveur.");
         }
     };
-}
+});

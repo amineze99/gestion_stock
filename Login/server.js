@@ -931,6 +931,22 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
+// جلب تاريخ العمليات المالية
+app.get('/api/transactions', (req, res) => {
+    const sql = `
+        SELECT t.*, 
+               COALESCE(c.nom, f.nom) as entite_nom 
+        FROM transactions t 
+        LEFT JOIN client c ON t.type_entite = 'client' AND t.entite_id = c.id 
+        LEFT JOIN fournisseur f ON t.type_entite = 'fournisseur' AND t.entite_id = f.id 
+        ORDER BY t.date_transaction DESC, t.id DESC
+    `;
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: "Database error", details: err });
+        res.json(results);
+    });
+});
+
 // ===== 10. BI Dashboard Endpoints =====
 // ===== DASHBOARD CARDS STATS =====
 app.get('/api/stats/dashboard-cards', (req, res) => {
