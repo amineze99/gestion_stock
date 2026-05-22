@@ -94,8 +94,7 @@ function renderSuppliers(suppliers) {
                     <div class="supp-icon" style="background:#f5f3ff; color:#7c3aed; padding:8px; border-radius:8px;">💜</div> 
                     <div>
                         <strong style="display:block;">${s.nom}</strong>
-                        <small style="color:#64748b">ID: #SUP-${s.id} | RC: ${s.rc || '--'} | NIF: ${s.nif || '--'}</small><br>
-                        <small style="color:#64748b">AI: ${s.ai || '--'} | NIS: ${s.nis || '--'}</small>
+                        <small style="color:#64748b">RC: ${s.rc || '--'} | NIF: ${s.nif || '--'} | AI: ${s.ai || '--'} | NIS: ${s.nis || '--'}</small>
                         <p style="font-size:11px; color:#64748b">📅 Added on: ${dateAdded}</p>
                     </div>
                 </div>
@@ -112,6 +111,11 @@ function renderSuppliers(suppliers) {
         </tr>
         `;
     }).join('');
+
+    const paginationInfo = document.getElementById('paginationInfo');
+    if (paginationInfo) {
+        paginationInfo.textContent = `Affichage de ${suppliers.length} fournisseur(s) sur ${suppliers.length} total`;
+    }
 }
 // جعل الدالة عامة ليراها المتصفح عند الضغط على الزر
 window.deleteSupp = async function(id) {
@@ -158,6 +162,14 @@ window.openEditModal = function(id) {
 window.closeEditModal = function() {
     document.getElementById('editSupplierModal').style.display = "none";
 };
+
+// Handle close edit btn (X)
+document.addEventListener('DOMContentLoaded', () => {
+    const closeEditBtn = document.querySelector('.close-edit-btn');
+    if (closeEditBtn) {
+        closeEditBtn.addEventListener('click', closeEditModal);
+    }
+});
 
 // 3. معالجة إرسال الفورم (Submit)
 document.addEventListener('DOMContentLoaded', () => {

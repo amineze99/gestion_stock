@@ -1,27 +1,22 @@
-// ===== 1. جلب الإحصائيات العامة (الزبائن) =====
+// ===== 1. جلب الإحصائيات العامة =====
 async function updateDashboardStats() {
     try {
-        const response = await fetch('http://localhost:3000/api/stats/clients-trend');
+        const response = await fetch('http://localhost:3000/api/stats/dashboard-cards');
         const data = await response.json();
 
-        if (data.success) {
-            // تحديث الرقم الكبير
-            const countEl = document.getElementById('totalClientsCount');
-            if (countEl) countEl.innerText = data.total;
+        if (response.ok) {
+            const elProducts = document.getElementById('stat-products');
+            const elClients = document.getElementById('stat-clients');
+            const elSuppliers = document.getElementById('stat-suppliers');
+            const elRevenue = document.getElementById('stat-revenue');
 
-            // تحديث النسبة المئوية
-            const trendEl = document.getElementById('clientTrend');
-            if (trendEl) {
-                const val = parseFloat(data.trend);
-                trendEl.innerText = val > 0 ? `+${val}%` : `0%`;
-                
-                // تغيير الألوان حسب القيمة
-                trendEl.style.color = val > 0 ? "#10b981" : "#64748b";
-                trendEl.style.backgroundColor = val > 0 ? "#dcfce7" : "#f1f5f9";
-            }
+            if (elProducts) elProducts.innerText = data.products || 0;
+            if (elClients) elClients.innerText = data.clients || 0;
+            if (elSuppliers) elSuppliers.innerText = data.suppliers || 0;
+            if (elRevenue) elRevenue.innerText = (data.revenue || 0) + ' DA';
         }
     } catch (error) {
-        console.error("Connection Error (Stats):", error);
+        console.error("Connection Error (Dashboard Cards):", error);
     }
 }
 

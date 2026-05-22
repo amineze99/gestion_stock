@@ -869,14 +869,22 @@ app.put('/api/suppliers/:id', (req, res) => {
 
 app.delete('/api/suppliers/:id', (req, res) => {
     const supplierId = req.params.id;
-    const sql = "DELETE FROM fournisseur WHERE id = ?";
     
-    db.query(sql, [supplierId], (err) => {
-        if (err) {
-            console.error("Erreur Delete Supplier:", err);
-            return res.status(500).json({ success: false, message: "تعذر الحذف" });
+    // Set id_fournisseur to NULL in operation table before deleting
+    db.query("UPDATE operation SET id_fournisseur = NULL WHERE id_fournisseur = ?", [supplierId], (errUpdate) => {
+        if (errUpdate) {
+            console.error("Erreur Update Operation before delete:", errUpdate);
+            return res.status(500).json({ success: false, message: "تعذر الحذف بسبب قيود قاعدة البيانات" });
         }
-        res.json({ success: true });
+        
+        const sql = "DELETE FROM fournisseur WHERE id = ?";
+        db.query(sql, [supplierId], (err) => {
+            if (err) {
+                console.error("Erreur Delete Supplier:", err);
+                return res.status(500).json({ success: false, message: "تعذر الحذف" });
+            }
+            res.json({ success: true });
+        });
     });
 });
 
@@ -924,6 +932,33 @@ app.post('/api/transactions', async (req, res) => {
 });
 
 // ===== 10. BI Dashboard Endpoints =====
+// ===== DASHBOARD CARDS STATS =====
+app.get('/api/stats/dashboard-cards', (req, res) => {
+    const sqlProducts = "SELECT COUNT(*) as count FROM produit";
+    const sqlClients = "SELECT COUNT(*) as count FROM client";
+    const sqlSuppliers = "SELECT COUNT(*) as count FROM fournisseur";
+    const sqlRevenue = "SELECT SUM(montant_total) as total FROM operation WHERE type_op = 'Vente' AND MONTH(date_op) = MONTH(CURRENT_DATE()) AND YEAR(date_op) = YEAR(CURRENT_DATE())";
+
+    db.query(sqlProducts, (err1, res1) => {
+        db.query(sqlClients, (err2, res2) => {
+            db.query(sqlSuppliers, (err3, res3) => {
+                db.query(sqlRevenue, (err4, res4) => {
+                    if (err1 || err2 || err3 || err4) {
+                        console.error("Dashboard Stats Error", err1 || err2 || err3 || err4);
+                        return res.status(500).json({ error: "Database error" });
+                    }
+                    res.json({
+                        products: res1[0].count || 0,
+                        clients: res2[0].count || 0,
+                        suppliers: res3[0].count || 0,
+                        revenue: res4[0].total || 0
+                    });
+                });
+            });
+        });
+    });
+});
+
 app.get('/api/stats/bi-dashboard', async (req, res) => {
     try {
         // Fetch all products with non-zero stock/price to compute ABC

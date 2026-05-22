@@ -20,40 +20,36 @@
                     <input type="text" placeholder="Rechercher produits, clients...">
                 </div>
                 <div class="user-profile">
-                    <button class="btn-add">+ Ajouter Produit</button>
+                    <button onclick="window.location.href='produits.html'" class="btn-add">+ Ajouter Produit</button>
                 </div>
             </header>
 
             <section class="content-body">
                 <h1>Dashboard</h1>
                 <p>Aperçu de l'activité du magasin</p>
-
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Total Products</p>
-                            <h2>0</h2>
-                            <span class="trend">0%</span>
+                            <h2 id="stat-products">0</h2>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Total Clients</p>
-                            <h2 id="totalClientsCount">0</h2>
-                            <span id="clientTrend" class="trend">0%</span>
+                            <h2 id="stat-clients">0</h2>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Total Suppliers</p>
-                            <h2>0</h2>
-                            <span id="supplierTrend" class="trend">0%</span>
+                            <h2 id="stat-suppliers">0</h2>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-info">
                             <p>Monthly Revenue</p>
-                            <h2>0 €</h2>
+                            <h2 id="stat-revenue">0 DA</h2>
                         </div>
                     </div>
                 </div>
