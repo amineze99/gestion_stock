@@ -886,5 +886,83 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
+// ===== 10. BI Dashboard Endpoints =====
+app.get('/api/stats/bi-dashboard', async (req, res) => {
+    try {
+        // Fetch all products with non-zero stock/price to compute ABC
+        const [products] = await chatPool.query(`
+            SELECT id, nom_produit, referencee, stock_actuel, prix_achat, quantite_min 
+            FROM produit 
+            ORDER BY (stock_actuel * prix_achat) DESC
+        `);
+
+        if (!products || products.length === 0) {
+            return res.json({ success: true, abc: [], operational: [] });
+        }
+
+        // Calculate total inventory value
+        let totalVal = 0;
+        products.forEach(p => {
+            p.valeur = p.stock_actuel * p.prix_achat;
+            totalVal += p.valeur;
+        });
+
+        // Compute cumulative values and ABC classifications
+        let cumulativeVal = 0;
+        const abcData = products.map(p => {
+            cumulativeVal += p.valeur;
+            const cumulativePct = totalVal > 0 ? (cumulativeVal / totalVal) * 100 : 0;
+            
+            let category = 'C';
+            if (cumulativePct <= 70) {
+                category = 'A';
+            } else if (cumulativePct <= 90) {
+                category = 'B';
+            }
+
+            return {
+                id: p.id,
+                name: p.nom_produit,
+                ref: p.referencee,
+                valeur: p.valeur,
+                cumulativePct: parseFloat(cumulativePct.toFixed(2)),
+                category: category
+            };
+        });
+
+        // Get operational data for top 8 products (with reorder points and safety stock)
+        const operationalData = products.slice(0, 8).map(p => {
+            const reorderPoint = p.quantite_min;
+            const safetyStock = Math.round(p.quantite_min * 0.5);
+            
+            let status = 'optimal'; // optimal, warning, critical
+            if (p.stock_actuel <= safetyStock) {
+                status = 'critical';
+            } else if (p.stock_actuel <= reorderPoint) {
+                status = 'warning';
+            }
+
+            return {
+                id: p.id,
+                name: p.nom_produit,
+                stock: p.stock_actuel,
+                reorderPoint: reorderPoint,
+                safetyStock: safetyStock,
+                status: status
+            };
+        });
+
+        res.json({
+            success: true,
+            abc: abcData,
+            operational: operationalData
+        });
+
+    } catch (e) {
+        console.error('Error fetching BI stats:', e);
+        res.status(500).json({ success: false, message: e.message });
+    }
+});
+
 
 

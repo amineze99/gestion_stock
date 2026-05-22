@@ -25,9 +25,233 @@ async function updateDashboardStats() {
     }
 }
 
+// ===== 2. Real-Time Business Intelligence (BI) Charts =====
+let abcChartInstance = null;
+let stockLevelsChartInstance = null;
+
+// Real-time synchronization loader
+async function updateBIData() {
+    try {
+        const response = await fetch('http://localhost:3000/api/stats/bi-dashboard');
+        const data = await response.json();
+
+        if (data.success) {
+            updateBICharts(data);
+        }
+    } catch (error) {
+        console.error("Connection Error (BI Stats):", error);
+    }
+}
+
+function updateBICharts(data) {
+    const abcData = data.abc || [];
+    const operationalData = data.operational || [];
+
+    // --- 1. ABC Analysis Chart (Strategic View) ---
+    const abcCtx = document.getElementById('abcChart');
+    if (abcCtx) {
+        // Sort products by value
+        const topAbc = abcData.slice(0, 10);
+        const labels = topAbc.map(p => p.name.length > 12 ? p.name.substring(0, 12) + '...' : p.name);
+        const values = topAbc.map(p => p.valeur);
+        const percentages = topAbc.map(p => p.cumulativePct);
+        
+        // Dynamic colors: Class A (Emerald), Class B (Amber), Class C (Slate)
+        const barColors = topAbc.map(p => {
+            if (p.category === 'A') return 'rgba(16, 185, 129, 0.85)'; // Emerald
+            if (p.category === 'B') return 'rgba(245, 158, 11, 0.85)'; // Amber
+            return 'rgba(148, 163, 184, 0.85)'; // Slate
+        });
+
+        const chartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Valeur de l\'inventaire (DA)',
+                    type: 'bar',
+                    data: values,
+                    backgroundColor: barColors,
+                    borderColor: barColors.map(c => c.replace('0.85', '1')),
+                    borderWidth: 1.5,
+                    yAxisID: 'yLeft',
+                    order: 2
+                },
+                {
+                    label: 'Cumulé (%)',
+                    type: 'line',
+                    data: percentages,
+                    borderColor: 'rgba(59, 130, 246, 1)', // Blue
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointRadius: 4,
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'yRight',
+                    order: 1
+                }
+            ]
+        };
+
+        if (abcChartInstance) {
+            abcChartInstance.data = chartData;
+            abcChartInstance.update();
+        } else {
+            abcChartInstance = new Chart(abcCtx.getContext('2d'), {
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: { family: 'Inter', size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.dataset.type === 'bar') {
+                                        label += context.raw.toLocaleString() + ' DA';
+                                    } else {
+                                        label += context.raw + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        },
+                        yLeft: {
+                            type: 'linear',
+                            position: 'left',
+                            title: { display: true, text: 'Valeur (DA)', font: { family: 'Inter', size: 11 } },
+                            ticks: {
+                                font: { family: 'Inter', size: 9 },
+                                callback: function(value) { return value.toLocaleString(); }
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        yRight: {
+                            type: 'linear',
+                            position: 'right',
+                            min: 0,
+                            max: 100,
+                            title: { display: true, text: 'Cumulé (%)', font: { family: 'Inter', size: 11 } },
+                            ticks: {
+                                font: { family: 'Inter', size: 9 },
+                                callback: function(value) { return value + '%'; }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // --- 2. Stock Levels vs. Reorder Points Chart (Operational View) ---
+    const stockCtx = document.getElementById('stockLevelsChart');
+    if (stockCtx) {
+        const topOp = operationalData.slice(0, 7);
+        const labels = topOp.map(p => p.name.length > 12 ? p.name.substring(0, 12) + '...' : p.name);
+        const stocks = topOp.map(p => p.stock);
+        const reorders = topOp.map(p => p.reorderPoint);
+        const safeties = topOp.map(p => p.safetyStock);
+
+        // Health indicators: Red (critical), Yellow (warning), Green (optimal)
+        const stockColors = topOp.map(p => {
+            if (p.status === 'critical') return 'rgba(239, 68, 68, 0.85)'; // Red
+            if (p.status === 'warning') return 'rgba(245, 158, 11, 0.85)'; // Amber/Yellow
+            return 'rgba(16, 185, 129, 0.85)'; // Green
+        });
+
+        const chartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Stock Actuel',
+                    data: stocks,
+                    backgroundColor: stockColors,
+                    borderColor: stockColors.map(c => c.replace('0.85', '1')),
+                    borderWidth: 1.5,
+                    barThickness: 16
+                },
+                {
+                    label: 'Point de Réappro.',
+                    data: reorders,
+                    backgroundColor: 'rgba(99, 102, 241, 0.15)', // Light Indigo
+                    borderColor: 'rgba(99, 102, 241, 0.85)',
+                    borderWidth: 1.5,
+                    borderDash: [4, 4],
+                    barThickness: 16
+                },
+                {
+                    label: 'Stock de Sécurité',
+                    data: safeties,
+                    backgroundColor: 'rgba(226, 232, 240, 0.5)', // Gray
+                    borderColor: 'rgba(148, 163, 184, 0.85)',
+                    borderWidth: 1.5,
+                    barThickness: 16
+                }
+            ]
+        };
+
+        if (stockLevelsChartInstance) {
+            stockLevelsChartInstance.data = chartData;
+            stockLevelsChartInstance.update();
+        } else {
+            stockLevelsChartInstance = new Chart(stockCtx.getContext('2d'), {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    indexAxis: 'y', // Makes the chart horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: { family: 'Inter', size: 11 }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Quantité', font: { family: 'Inter', size: 11 } },
+                            ticks: { font: { family: 'Inter', size: 10 } },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
+
 // تشغيل جلب الإحصائيات عند تحميل واجهة الداشبورد
 document.addEventListener('DOMContentLoaded', () => {
     updateDashboardStats();
+    updateBIData();
+    
+    // Auto-sync refresh interval (every 30 seconds for dynamic synchronization)
+    setInterval(() => {
+        updateDashboardStats();
+        updateBIData();
+    }, 30000);
 });
 
 // ===== 3. نظام وميكانيكية الـ Chatbot =====

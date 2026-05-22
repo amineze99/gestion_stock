@@ -59,17 +59,23 @@
                 </div>
 
                 <div class="details-grid">
-                    <div class="recent-sales card">
-                        <h3>Ventes récentes</h3>
-                        <p> Aucune vente disponible actuellement</p>
-                        <button onclick="window.location.href='ventes.html'" class="btn-primary">+ Nouvelle
-                            vente</button>
+                    <div class="card bi-card">
+                        <div class="card-header">
+                            <h3>Analyse Stratégique ABC</h3>
+                            <span class="badge-info">Valeur du Stock</span>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 320px; width: 100%; margin-top: 15px;">
+                            <canvas id="abcChart"></canvas>
+                        </div>
                     </div>
-                    <div class="stock-alerts card">
-                        <h3>Alertes stock faible</h3>
-                        <p>Le stock est actuellement plein.</p>
-                        <button onclick="window.location.href='achats.html'" class="btn-warning">+ Commander
-                            produits</button>
+                    <div class="card bi-card">
+                        <div class="card-header">
+                            <h3>État des Stocks vs Point de Commande</h3>
+                            <span class="badge-warning">Opérationnel</span>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 320px; width: 100%; margin-top: 15px;">
+                            <canvas id="stockLevelsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -95,6 +101,7 @@
 
     <!-- Chatbot Toggle Button -->
     <button class="chatbot-toggle" id="chatbotToggle">💬</button>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="dashbord.js"></script>
 </body>
 
