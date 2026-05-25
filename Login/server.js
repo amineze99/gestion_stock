@@ -14,8 +14,8 @@ const app = express();
 
 // --- 1. الميدل وير (Middlewares) ---
 app.use(cors());
-app.use(express.json()); // بديل حديث لـ bodyParser.json()
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(__dirname)); // المجلد العام
 app.use('/photos', express.static(path.join(__dirname, 'photos')));
 
@@ -186,10 +186,11 @@ app.get('/api/categories', (req, res) => {
 function savePhotoSync(photoBase64, referencee) {
     if (!photoBase64 || !photoBase64.startsWith('data:')) return null;
     try {
-        const matches = photoBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        const matches = photoBase64.match(/^data:(.*?);base64,(.*)$/);
         if (!matches || matches.length !== 3) return null;
         
-        const fileExtension = matches[1].split('/')[1] || 'jpg';
+        const mimeType = matches[1].split(';')[0]; // in case there are other parameters
+        const fileExtension = mimeType.split('/')[1] || 'jpg';
         const imageBuffer = Buffer.from(matches[2], 'base64');
         const fileName = `p_${Date.now()}_${referencee.replace(/[^a-zA-Z0-9]/g, '_')}.${fileExtension}`;
         const filePath = path.join(__dirname, 'photos', fileName);
@@ -209,7 +210,7 @@ function savePhotoSync(photoBase64, referencee) {
 
 // --- 6. مسارات المنتجات (Products) ---
 app.get('/api/produits', (req, res) => {
-    const sql = "SELECT p.*, c.libelle as category_name FROM Produit p LEFT JOIN Categorie c ON p.id_categorie = c.id ORDER BY p.id DESC";
+    const sql = "SELECT p.*, c.libelle as category_name, f.nom as fournisseur_name FROM Produit p LEFT JOIN Categorie c ON p.id_categorie = c.id LEFT JOIN fournisseur f ON p.id_fournisseur = f.id ORDER BY p.id DESC";
     db.query(sql, (err, results) => {
         if (err) return res.status(500).send(err);
         res.json(results);
@@ -217,13 +218,13 @@ app.get('/api/produits', (req, res) => {
 });
 
 app.post('/api/produits', (req, res) => {
-    const { referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, photoBase64 } = req.body;
+    const { referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, id_fournisseur, photoBase64 } = req.body;
     
     // Save photo to disk if provided
     const photoPath = savePhotoSync(photoBase64, referencee);
     
-    const sql = "INSERT INTO Produit (referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    db.query(sql, [referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min || 5, id_categorie || null, photoPath], (err, result) => {
+    const sql = "INSERT INTO Produit (referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, id_fournisseur, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min || 5, id_categorie || null, id_fournisseur || null, photoPath], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: err.sqlMessage });
         res.json({ success: true, id: result.insertId });
     });
@@ -239,7 +240,7 @@ app.get('/api/produits/:id', (req, res) => {
 
 // مسار تعديل منتج
 app.put('/api/produits/:id', (req, res) => {
-    const { referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, photoBase64, photo } = req.body;
+    const { referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, id_fournisseur, photoBase64, photo } = req.body;
     
     // If a new photo is uploaded, save it. Otherwise, keep the existing photo path.
     let photoPath = photo;
@@ -248,9 +249,9 @@ app.put('/api/produits/:id', (req, res) => {
     }
     
     const sql = `UPDATE Produit SET referencee=?, nom_produit=?, prix_achat=?, prix_vente=?, 
-                 stock_actuel=?, quantite_min=?, id_categorie=?, photo=? WHERE id=?`;
+                 stock_actuel=?, quantite_min=?, id_categorie=?, id_fournisseur=?, photo=? WHERE id=?`;
     
-    db.query(sql, [referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie, photoPath, req.params.id], (err) => {
+    db.query(sql, [referencee, nom_produit, prix_achat, prix_vente, stock_actuel, quantite_min, id_categorie || null, id_fournisseur || null, photoPath, req.params.id], (err) => {
         if (err) return res.status(500).json({ success: false, message: err.sqlMessage });
         res.json({ success: true });
     });

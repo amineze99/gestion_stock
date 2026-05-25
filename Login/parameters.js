@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default Values
     const defaultGeneralSettings = {
         storeName: 'BRICALLERIE',
-        storeAddress: '123 Rue du Commerce, 75001 Paris',
-        storePhone: '+33 1 23 45 67 89',
+        storeAddress: 'Rue Amir Abdelkader, Oran, Algérie',
+        storePhone: '+213 666 66 66 66',
         storeEmail: 'contact@bricaillerie.com',
-        storeCurrency: 'EUR',
+        storeCurrency: 'DZD',
         storeTax: '20'
     };
 

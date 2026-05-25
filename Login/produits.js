@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableBody = document.getElementById('productsTableBody');
     const modalTitle = document.querySelector('.modal-content h2');
     const categorySelect = document.getElementById('pCategory'); // عنصر القائمة المنسدلة
+    const supplierSelect = document.getElementById('pSupplier'); // عنصر القائمة المنسدلة للموردين
     
     const fileInput = document.getElementById('pImgInput');
     const imgPreview = document.getElementById('imgPreview');
@@ -35,6 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } catch (error) {
             console.error("Erreur lors du chargement des catégories:", error);
+        }
+    }
+
+    // --- دالة جديدة لجلب الموردين ديناميكياً من السيرفر ---
+    async function loadSuppliers() {
+        try {
+            const response = await fetch('http://localhost:3000/api/suppliers');
+            const suppliers = await response.json();
+            
+            if (supplierSelect) {
+                supplierSelect.innerHTML = '<option value="">Sélectionner Fournisseur</option>';
+                suppliers.forEach(sup => {
+                    const option = document.createElement('option');
+                    option.value = sup.id;
+                    option.textContent = sup.nom;
+                    supplierSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des fournisseurs:", error);
         }
     }
 
@@ -117,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${product.stock_actuel}</td>
                         <td>${product.prix_achat} DA</td>
                         <td>${product.prix_vente} DA</td>
-                        <td>N/A</td> 
+                        <td>${product.fournisseur_name || "N/A"}</td> 
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
                             <button class="btn-action btn-edit" onclick="editProduct(${product.id})">📝</button>
@@ -137,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // التأكد من جلب القيمة المختارة بدقة
         const selectedCategory = categorySelect.value;
+        const selectedSupplier = supplierSelect ? supplierSelect.value : "";
         
         const productData = {
             referencee: document.getElementById('pRef').value,
@@ -146,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stock_actuel: parseInt(document.getElementById('pStock').value),
             quantite_min: parseInt(document.getElementById('pMinStock').value) || 5,
             id_categorie: selectedCategory === "" ? null : parseInt(selectedCategory),
+            id_fournisseur: selectedSupplier === "" ? null : parseInt(selectedSupplier),
             photoBase64: photoBase64,
             photo: currentPhotoPath
         };
@@ -192,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // اختيار الفئة الصحيحة في القائمة المنسدلة
             categorySelect.value = product.id_categorie || "";
+            if (supplierSelect) supplierSelect.value = product.id_fournisseur || "";
 
             // عرض الصورة الحالية إن وجدت
             currentPhotoPath = product.photo;
@@ -230,5 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- التشغيل عند تحميل الصفحة ---
     loadCategories(); // جلب الفئات أولاً
+    loadSuppliers(); // جلب الموردين
     fetchAndDisplayProducts(); // عرض المنتجات
 });
