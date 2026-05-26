@@ -26,10 +26,15 @@ app.use('/photos', express.static(path.join(__dirname, 'photos')));
 
 // --- 2. الاتصال بقاعدة البيانات ---
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || '127.0.0.1',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '', 
-    database: process.env.DB_NAME || 'gestion_stock' 
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    // ⚠️ هذا السطر ضروري جداً لكي تنجح المنصات السحابية في الاتصال ببعضها
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 db.connect((err) => {
