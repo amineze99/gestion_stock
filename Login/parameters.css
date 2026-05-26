@@ -1,10 +1,14 @@
 /* --- Parameters Page Styling --- */
 
+:root {
+    --app-font: 'Inter, sans-serif';
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--app-font, 'Inter, sans-serif');
 }
 
 body {
@@ -46,9 +50,11 @@ body {
 /* --- Settings Main Container --- */
 .settings-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 1fr;
     gap: 30px;
     align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* --- Settings Left Sidebar Tabs --- */
@@ -115,6 +121,7 @@ body {
     padding: 35px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     min-height: 500px;
+    width: 100%;
 }
 
 /* --- Panels Visibility --- */
@@ -592,4 +599,42 @@ input:checked + .slider:before {
     .btn-danger {
         width: 100%;
     }
+}
+
+/* --- Dark theme overrides --- */
+.dark-theme {
+    background-color: #0b1220 !important;
+    color: #e6eef8 !important;
+}
+
+.dark-theme .main-content {
+    background-color: #071021 !important;
+}
+
+.dark-theme .settings-content,
+.dark-theme .settings-tabs,
+.dark-theme .data-card,
+.dark-theme .danger-zone,
+.dark-theme .profile-avatar-section {
+    background-color: #071126 !important;
+    border-color: #123047 !important;
+    color: #e6eef8 !important;
+}
+
+.dark-theme .form-group input,
+.dark-theme .form-group select,
+.dark-theme .toggle-item,
+.dark-theme .data-card,
+.dark-theme .btn-data-action.btn-secondary {
+    background-color: #071126 !important;
+    color: #e6eef8 !important;
+    border-color: #123047 !important;
+}
+
+.dark-theme .btn-submit {
+    background-color: #1f6feb !important;
+}
+
+.dark-theme .toast {
+    background-color: #0f172a !important;
 }

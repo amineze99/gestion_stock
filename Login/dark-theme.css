@@ -1,0 +1,62 @@
+/* Global dark theme overrides when body.dark-theme is present */
+body.dark-theme {
+    background-color: #071021 !important;
+    color: #e6eef8 !important;
+}
+
+body.dark-theme .main-content,
+body.dark-theme .content-body,
+body.dark-theme .settings-content,
+body.dark-theme .card,
+body.dark-theme .card * {
+    background-color: transparent !important;
+    color: #e6eef8 !important;
+}
+
+body.dark-theme .top-header,
+body.dark-theme .header-flex,
+body.dark-theme .header-section {
+    background-color: transparent !important;
+    color: #e6eef8 !important;
+}
+
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, body.dark-theme h4 {
+    color: #e6eef8 !important;
+}
+
+body.dark-theme p, body.dark-theme label {
+    color: #cbd5e1 !important;
+}
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+    background-color: #071126 !important;
+    color: #e6eef8 !important;
+    border-color: #123047 !important;
+}
+
+body.dark-theme table th,
+body.dark-theme table td {
+    background-color: transparent !important;
+    color: #e6eef8 !important;
+    border-color: rgba(255,255,255,0.06) !important;
+}
+
+body.dark-theme .btn-submit,
+body.dark-theme .btn-add,
+body.dark-theme .btn-save {
+    background-color: #1f6feb !important;
+    color: #ffffff !important;
+}
+
+body.dark-theme .stat-card,
+body.dark-theme .data-card {
+    background-color: #071126 !important;
+    border-color: #123047 !important;
+}
+
+/* Fallback for pages with hardcoded fonts */
+body.dark-theme * {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}

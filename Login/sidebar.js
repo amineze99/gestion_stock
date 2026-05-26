@@ -2,12 +2,11 @@ class AppSidebar extends HTMLElement {
     connectedCallback() {
         this.style.display = 'contents';
         const currentPage = window.location.pathname.split('/').pop() || 'dashbord.html';
-
         this.innerHTML = `
         <link rel="stylesheet" href="sidebar.css">
         <nav class="sidebar">
             <div class="sidebar-logo">
-                <img src="photos/logo.png" alt="Logo">
+                <img src="photos/logo-2.png" alt="Logo">
             </div>
 
             <ul class="nav-links">
@@ -72,6 +71,24 @@ class AppSidebar extends HTMLElement {
             </div>
         </nav>
         `;
+
+        // Apply saved theme and font globally (applies night mode across pages)
+        try {
+            const savedTheme = localStorage.getItem('bricaillerie_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+
+            const savedFont = localStorage.getItem('bricaillerie_font');
+            if (savedFont) {
+                document.documentElement.style.setProperty('--app-font', savedFont);
+            }
+        } catch (err) {
+            // ignore in environments without localStorage
+            console.warn('Could not apply theme/font:', err);
+        }
     }
 }
 

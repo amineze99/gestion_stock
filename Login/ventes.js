@@ -203,7 +203,7 @@ window.printInvoice = async (id) => {
             <body>
                 <div class="header">
                     <h1>FACTURE DE VENTE</h1>
-                    <img src="photos/logo.png" alt="Logo" style="max-width: 150px; margin-top: 10px;">
+                    <img src="photos/logo-2.png" alt="Logo" style="max-width: 150px; margin-top: 10px; height: 120px;">
                     <p>N°: ${operation.id} | Date: ${new Date(operation.date_op).toLocaleString()}</p>
                 </div>
                 <p><strong>Client:</strong> ${operation.client_nom || 'Comptant'}</p>
