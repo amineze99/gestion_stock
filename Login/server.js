@@ -14,9 +14,8 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app); // تحويل التطبيق ليدعم الـ WebSockets
 
-// استدعاء ملف التنبيهات وتمرير السيرفر له
-const { initNotifications } = require('./notifications');
-initNotifications(server);
+
+
 
 // --- 1. الميدل وير (Middlewares) ---
 app.use(cors());
