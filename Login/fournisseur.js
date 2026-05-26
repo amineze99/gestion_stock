@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     form.reset();
                     fetchSuppliers(); 
                 } else {
-                    alert("Erreur lors de l'ajout");
+                    alert("Error adding supplier");
                 }
             } catch (error) {
-                console.error("Erreur de اتصال بالسيرفر:", error);
+                console.error("Error while connecting to server:", error);
                 alert("Impossible de contacter le serveur");
             }
         });
@@ -86,7 +86,7 @@ function renderSuppliers(suppliers) {
             day: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
-        }) : 'تاريخ غير معروف';
+        }) : 'Date not found';
         return `
         <tr>
             <td>
@@ -128,10 +128,10 @@ window.deleteSupp = async function(id) {
                 // تحديث الجدول فوراً بعد الحذف
                 fetchSuppliers(); 
             } else {
-                alert("Erreur lors de la suppression");
+                alert("Error deleting supplier");
             }
         } catch (error) {
-            console.error("Erreur:", error);
+            console.error("Error:", error);
             alert("Impossible de contacter le serveur");
         }
     }
@@ -199,13 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const result = await response.json();
                 if (result.success) {
-                    alert("Modifié avec succès !");
+                    alert("Supplier updated successfully!");
                     closeEditModal();
                     fetchSuppliers(); // تحديث الجدول فوراً
                 }
             } catch (error) {
-                console.error("Erreur:", error);
-                alert("Erreur lors de la mise à jour");
+                console.error("Error:", error);
+                alert("Error updating supplier");
             }
         };
     }

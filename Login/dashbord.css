@@ -476,34 +476,57 @@ body {
     font-size: 11px;
     font-weight: 600;
 }
- / *   = = = = =   M a i n   T a b l e s   ( V e n t e s   &   A c h a t s )   = = = = =   * / 
- . m a i n - t a b l e   { 
-         w i d t h :   1 0 0 % ; 
-         b o r d e r - c o l l a p s e :   c o l l a p s e ; 
-         m a r g i n - t o p :   2 0 p x ; 
-         b a c k g r o u n d :   w h i t e ; 
-         b o r d e r - r a d i u s :   8 p x ; 
-         o v e r f l o w :   h i d d e n ; 
- } 
- . m a i n - t a b l e   t h e a d   { 
-         b a c k g r o u n d :   # f 8 f a f c ; 
- } 
- . m a i n - t a b l e   t h   { 
-         t e x t - a l i g n :   l e f t ; 
-         p a d d i n g :   1 5 p x ; 
-         c o l o r :   # 4 7 5 5 6 9 ; 
-         f o n t - s i z e :   1 3 p x ; 
-         f o n t - w e i g h t :   6 0 0 ; 
-         t e x t - t r a n s f o r m :   u p p e r c a s e ; 
- } 
- . m a i n - t a b l e   t d   { 
-         p a d d i n g :   1 5 p x ; 
-         b o r d e r - b o t t o m :   1 p x   s o l i d   # e 2 e 8 f 0 ; 
-         c o l o r :   # 1 e 2 9 3 b ; 
-         f o n t - s i z e :   1 4 p x ; 
- } 
- . m a i n - t a b l e   t r : h o v e r   { 
-         b a c k g r o u n d :   # f 1 f 5 f 9 ; 
- } 
-  
- 
+
+.notification-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: #ffffff;
+    min-width: 280px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.badge {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
+.notification-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f1f1;
+    list-style: none;
+    font-size: 13px;
+}
+
+.notification-item.unread {
+    background-color: #f9f9f9;
+}
+
+.notification-item strong {
+    color: #d9534f;
+}
+
+.notification-item p {
+    margin: 4px 0 0 0;
+    color: #555;
+}

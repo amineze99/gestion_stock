@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bricaillerie - Dashboard</title>
+    <title>Bricodz - Dashboard</title>
     <link rel="stylesheet" href="dashbord.css">
     <link rel="stylesheet" href="dark-theme.css">
     <script src="theme.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    
 </head>
 
 <body>
@@ -21,8 +23,18 @@
                 <div class="search-bar">
                     <input type="text" placeholder="Rechercher produits, clients...">
                 </div>
-                <div class="user-profile">
-                    <button onclick="window.location.href='produits.html'" class="btn-add">+ Ajouter Produit</button>
+                <div class="notification-container">
+                        <button id="notification-btn" onclick="toggleDropdown()">
+                        🔔 <span id="notification-count" class="badge">0</span>
+                        </button>
+    
+                        <div id="notification-dropdown" class="dropdown-content hidden">
+                            <h4>Notifications</h4>
+                            <hr>
+                            <ul id="notifications-list">
+                                <li class="empty-msg">No notifications available</li>
+                            </ul>
+                        </div>
                 </div>
             </header>
 

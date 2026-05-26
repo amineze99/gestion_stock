@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorData = await response.json();
                 alert("Erreur: " + errorData.message);
             }
-        } catch (error) { alert("خطأ في الاتصال بالسيرفر"); }
+        } catch (error) { alert("Error connecting to server"); }
     };
 
     // إعداد الحقول التلقائية (تاريخ اليوم ورقم الفاتورة)
@@ -174,9 +174,9 @@ window.deleteVente = async (id) => {
             if (response.ok) {
                 loadRecentSales(); 
             } else {
-                alert("Erreur lors de la suppression");
+                alert("Error deleting sale");
             }
-        } catch (error) { alert("خطأ في الاتصال بالسيرفر"); }
+        } catch (error) { alert("Error connecting to server"); }
     }
 };
 
@@ -226,7 +226,7 @@ window.printInvoice = async (id) => {
             </html>
         `);
         printWindow.document.close();
-    } catch (error) { console.error("Erreur impression:", error); }
+    } catch (error) { console.error("Error printing invoice:", error); }
 };
 
 window.printSale = function(id) {

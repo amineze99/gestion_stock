@@ -6,7 +6,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const passwordInput = document.getElementById('password');
 
     if (!emailInput || !passwordInput) {
-        console.error("خطأ: لم يتم العثور على حقول الإدخال في الـ HTML. تأكد من وجود id='email' و id='password'");
+        console.error("Data not found please enter data !! id='email' و id='password'");
         return;
     }
 
@@ -27,7 +27,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             localStorage.setItem('userRole', data.role);
             localStorage.setItem('userName', data.message);
 
-            alert("مرحباً بك: " + data.message);
+            alert("Welcome " + data.message);
             
             // الانتقال للداشبورد
             window.location.href = 'dashbord.html'; 
@@ -36,7 +36,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             alert(data.message);
         }
     } catch (error) {
-        console.error("خطأ في الاتصال بالسيرفر:", error);
-        alert("السيرفر غير متصل، تأكد من تشغيل Node.js");
+        console.error("Error connecting to server:", error);
+        alert("Server is not connected, make sure Node.js is running");
     }
 });

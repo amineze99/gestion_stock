@@ -26,7 +26,7 @@ async function fetchClients() {
         const data = await response.json();
         renderClients(data);
     } catch (error) {
-        console.error("Erreur fetching clients:", error);
+        console.error("Error fetching clients:", error);
     }
 }
 
@@ -37,7 +37,7 @@ function renderClients(clients) {
         // حساب التاريخ إذا كان موجود
         const dateAdded = c.created_at ? new Date(c.created_at).toLocaleString('fr-FR', {
             year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-        }) : 'تاريخ غير معروف';
+        }) : 'Unknown';
 
         return `
         <div class="client-card">
@@ -56,7 +56,7 @@ function renderClients(clients) {
                 </div>
             </div>
             <div class="contact-details">
-                <p>📞 ${c.contact || 'Non spécifié'}</p>
+                <p>📞 ${c.contact || 'Non specified'}</p>
             </div>
             <div class="business-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; font-size: 11px; color: #475569;">
                 <span><strong>RC:</strong> ${c.rc || '---'}</span>
@@ -66,11 +66,11 @@ function renderClients(clients) {
             </div>
             <div class="card-footer">
                 <div class="stat-box">
-                    <span>Solde à payer</span>
+                    <span>Balance Due</span>
                     <strong style="color: ${c.total_solde > 0 ? '#ef4444' : '#10b981'}">${c.total_solde} DA</strong>
                 </div>
             </div>
-            <button class="view-history">Voir détails</button>
+            <button class="view-history">View Details</button>
         </div>`;
     }).join('');
 }
@@ -95,23 +95,23 @@ clientForm.addEventListener('submit', async (e) => {
             body: JSON.stringify(newClient)
         });
         if (response.ok) {
-            alert("Client ajouté avec succès !");
+            alert("Client added successfully!");
             modal.style.display = "none";
             clientForm.reset();
             fetchClients();
         }
     } catch (error) {
-        console.error("Erreur lors de l'ajout:", error);
+        console.error("Error adding client:", error);
     }
 });
 
 // وظيفة حذف زبون
 window.deleteClient = async function(id) {
-    if (confirm("هل أنت متأكد من حذف هذا الزبون؟")) {
+    if (confirm("Are you sure you want to delete this client?")) {
         try {
             await fetch(`http://localhost:3000/api/clients/${id}`, { method: 'DELETE' });
             fetchClients();
-        } catch (error) { console.error("خطأ في الحذف:", error); }
+        } catch (error) { console.error("Error deleting client:", error); }
     }
 };
 
@@ -149,11 +149,11 @@ editClientForm.addEventListener('submit', async (e) => {
             body: JSON.stringify(updatedData)
         });
         if (response.ok) {
-            alert("تم تحديث البيانات بنجاح!");
+            alert("Data updated successfully!");
             editModal.style.display = "none";
             fetchClients();
         }
-    } catch (error) { console.error("خطأ في التحديث:", error); }
+    } catch (error) { console.error("Error updating client:", error); }
 });
 
 // تشغيل الجلب عند تحميل الصفحة

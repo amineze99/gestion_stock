@@ -328,7 +328,7 @@ async function sendMessage() {
     // 2. إظهار مؤشر الانتظار والتفكير
     const thinkingDiv = document.createElement('div');
     thinkingDiv.className = 'message bot-message thinking';
-    thinkingDiv.innerHTML = `<p>جاري التفكير... 🤖</p>`;
+    thinkingDiv.innerHTML = `<p>Thinking... 🤖</p>`;
     chatbotMessages.appendChild(thinkingDiv);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     
@@ -353,7 +353,7 @@ async function sendMessage() {
         if (data.success) {
             botMessageDiv.innerHTML = `<p>${data.message}</p>`;
         } else {
-            botMessageDiv.innerHTML = `<p style="color: #ef4444;">⚠️ خطأ: ${data.message}</p>`;
+            botMessageDiv.innerHTML = `<p style="color: #ef4444;">⚠️ Error: ${data.message}</p>`;
         }
         
         chatbotMessages.appendChild(botMessageDiv);
@@ -363,7 +363,7 @@ async function sendMessage() {
         }
         const errorDiv = document.createElement('div');
         errorDiv.className = 'message bot-message';
-        errorDiv.innerHTML = `<p style="color: #ef4444;">❌ فشل الاتصال: تأكد من تشغيل سيرفر البوت (node chat_bot.js)</p>`;
+        errorDiv.innerHTML = `<p style="color: #ef4444;">❌ Connection Failed: Make sure the chatbot server is running (node chat_bot.js)</p>`;
         chatbotMessages.appendChild(errorDiv);
         console.error("Chatbot Error:", error);
     }
@@ -390,3 +390,66 @@ if (chatbotInput) {
         }
     });
 }
+
+
+
+// ===== 4. نظام إدارة التنبيهات الفورية (Socket.io) =====
+
+// الاتصال بسيرفر التنبيهات
+const socket = io(); 
+
+// مصفوفة لتخزين الإشعارات المستلمة محلياً أثناء تصفح الصفحة
+let notificationsList = [];
+
+// الاستماع لحدث نقص المخزون القادم من السيرفر
+socket.on('low-stock-alert', (data) => {
+    // إضافة الإشعار الجديد في أول القائمة
+    notificationsList.unshift(data);
+    
+    // تحديث عناصر الواجهة
+    updateNotificationUI();
+});
+
+// دالة تحديث شارة العداد وقائمة الإشعارات المنسدلة
+function updateNotificationUI() {
+    const countBadge = document.getElementById('notification-count');
+    const listContainer = document.getElementById('notifications-list');
+    
+    if (!countBadge || !listContainer) return;
+
+    // تحديث الرقم فوق الجرس
+    countBadge.textContent = notificationsList.length;
+    
+    if (notificationsList.length === 0) {
+        listContainer.innerHTML = '<li class="empty-msg">No notifications available</li>';
+        countBadge.style.display = 'none'; 
+    } else {
+        countBadge.style.display = 'inline-block'; 
+        
+        // توليد عناصر الـ HTML لكل إشعار جديد
+        listContainer.innerHTML = notificationsList.map(notif => `
+            <li class="notification-item unread" style="padding: 10px; border-bottom: 1px solid var(--border-color, #f1f1f1); list-style: none;">
+                <strong style="color: #ef4444; font-size: 13px;">⚠️ ${notif.title}</strong>
+                <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted, #555);">${notif.message}</p>
+            </li>
+        `).join('');
+    }
+}
+
+// دالة فتح وإغلاق قائمة الإشعارات عند الضغط على الجرس
+function toggleDropdown() {
+    const dropdown = document.getElementById('notification-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// إغلاق القائمة تلقائياً إذا نقر المستخدم في أي مكان خارج صندوق الإشعارات
+window.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('notification-dropdown');
+    const btn = document.getElementById('notification-btn');
+    
+    if (dropdown && btn && !btn.contains(event.target) && !event.target.closest('.notification-container')) {
+        dropdown.classList.add('hidden');
+    }
+});

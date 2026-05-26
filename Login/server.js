@@ -11,6 +11,12 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 
 const app = express();
+const http = require('http');
+const server = http.createServer(app); // تحويل التطبيق ليدعم الـ WebSockets
+
+// استدعاء ملف التنبيهات وتمرير السيرفر له
+const { initNotifications } = require('./notifications');
+initNotifications(server);
 
 // --- 1. الميدل وير (Middlewares) ---
 app.use(cors());
@@ -29,7 +35,7 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) { console.error('خطأ في الاتصال:', err); return; }
-    console.log('تم الاتصال بقاعدة البيانات بنجاح!');
+    console.log('Successfully connected to the database.');
 });
 
 // --- 3. مسارات المصادقة (Auth) ---
@@ -43,7 +49,7 @@ app.post('/login', (req, res) => {
         if (results.length > 0) {
             res.json({ success: true, message: results[0].nom, role: results[0].role });
         } else {
-            res.status(401).json({ success: false, message: "المستخدم غير متوفر." });
+            res.status(401).json({ success: false, message: "User not found." });
         }
     });
 });
@@ -55,7 +61,7 @@ app.get('/api/clients', (req, res) => {
     db.query("SELECT * FROM Client ORDER BY id DESC", (err, results) => {
         if (err) {
             console.error("Erreur Fetch Clients:", err);
-            return res.status(500).json({ error: "خطأ في جلب بيانات العملاء" });
+            return res.status(500).json({ error: "Error fetching client data" });
         }
         res.json(results);
     });
@@ -69,7 +75,7 @@ app.post('/api/clients', (req, res) => {
     db.query(sql, [nom, contact, rc || '', nif || '', ai || '', nis || '', total_solde || 0], (err, result) => {
         if (err) {
             console.error("Erreur Add Client:", err);
-            return res.status(500).json({ error: "تعذر إضافة العميل" });
+            return res.status(500).json({ error: "Error adding client" });
         }
         res.json({ success: true, id: result.insertId });
     });
@@ -95,7 +101,7 @@ app.put('/api/clients/:id', (req, res) => {
     ], (err) => {
         if (err) {
             console.error("Erreur Update Client:", err);
-            return res.status(500).json({ success: false, message: "تعذر تحديث البيانات" });
+            return res.status(500).json({ success: false, message: "Error updating client data" });
         }
         res.json({ success: true });
     });
@@ -109,7 +115,7 @@ app.delete('/api/clients/:id', (req, res) => {
             console.error("Erreur Delete Client:", err);
             return res.status(500).json({ 
                 success: false, 
-                message: "لا يمكن حذف العميل لأنه مرتبط بعمليات بيع مسجلة" 
+                message: "Cannot delete client as they are linked to registered sales" 
             });
         }
         res.json({ success: true });
@@ -123,22 +129,22 @@ app.delete('/api/ventes/:id', (req, res) => {
     // حذف تفاصيل العملية أولاً ثم العملية نفسها
     db.query("DELETE FROM Details_Operation WHERE id_operation = ?", [opId], (err) => {
         if (err) {
-            console.error("خطأ أثناء حذف تفاصيل المبيعة:", err);
-            return res.status(500).json({ success: false, message: "Erreur SQL details" });
+            console.error("Error while deleting sale details:", err);
+            return res.status(500).json({ success: false, message: "Error SQL details" });
         }
 
         db.query("DELETE FROM Operation WHERE id = ?", [opId], (err2, result) => {
             if (err2) {
-                console.error("خطأ أثناء حذف المبيعة:", err2);
-                return res.status(500).json({ success: false, message: "Erreur SQL operation" });
+                console.error("Error while deleting sale:", err2);
+                return res.status(500).json({ success: false, message: "Error SQL operation" });
             }
 
             if (result.affectedRows === 0) {
-                return res.status(404).json({ success: false, message: "Vente non trouvée" });
+                return res.status(404).json({ success: false, message: "Sale not found" });
             }
 
-            console.log(`تم حذف المبيعة رقم ${opId} بنجاح`);
-            res.json({ success: true, message: "Supprimé avec succès" });
+            console.log(`Sale  with ID ${opId} deleted successfully  `);
+            res.json({ success: true, message: "Deleted successfully " });
         });
     });
 });
@@ -168,9 +174,9 @@ app.delete('/api/achats/:id', (req, res) => {
     db.query("DELETE FROM Operation WHERE id = ?", [opId], (err, result) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ success: false, message: "Erreur SQL" });
+            return res.status(500).json({ success: false, message: "Error SQL" });
         }
-        res.json({ success: true, message: "Supprimé بنجاح والمخزن تحديث آلياً" });
+        res.json({ success: true, message: "Deleted successfully " });
     });
 });
 
@@ -265,7 +271,7 @@ app.delete('/api/produits/:id', (req, res) => {
             console.error(err);
             return res.status(500).json({ 
                 success: false, 
-                message: "لا يمكن حذف المنتج لأنه مرتبط بعمليات بيع أو شراء مسجلة." 
+                message: "cannot delete product as it is linked to registered sales or purchases" 
             });
         }
         res.json({ success: true });
@@ -340,6 +346,20 @@ app.post('/api/ventes', (req, res) => {
         const values = items.map(i => [opId, i.id, i.qty, i.price]);
         db.query("INSERT INTO Details_Operation (id_operation, id_produit, quantite, prix_unitaire) VALUES ?", [values], (errDet) => {
             if (errDet) return res.status(500).json(errDet);
+            items.forEach(item => {
+                db.query("SELECT id, nom_produit, stock_actuel, quantite_min FROM Produit WHERE id = ?", [item.id], (errProd, prodResults) => {
+                    if (!errProd && prodResults.length > 0) {
+                        const product = prodResults[0];
+                        
+                        // التحقق مما إذا كان المخزون الحالي وصل أو قل عن الحد الأدنى المحدد
+                        if (product.stock_actuel <= product.quantite_min) {
+                            // استدعاء دالة الإرسال من ملف notifications.js
+                            const { sendLowStockAlert } = require('./notifications');
+                            sendLowStockAlert(product);
+                        }
+                    }
+                });
+            });
             res.json({ success: true });
         });
     });
@@ -850,7 +870,7 @@ app.post('/api/suppliers', (req, res) => {
     db.query(sql, [nom, contact, tel, email, total_solde || 0, rc, nif, ai, nis], (err, result) => {
         if (err) {
             console.error("Erreur Add Supplier:", err);
-            return res.status(500).json({ success: false, error: "تعذر إضافة المورد" });
+            return res.status(500).json({ success: false, error: "Error While Adding a new Supplier" });
         }
         res.json({ success: true, id: result.insertId });
     });
@@ -865,7 +885,7 @@ app.put('/api/suppliers/:id', (req, res) => {
     db.query(sql, [nom, contact, tel, email, total_solde || 0, rc, nif, ai, nis, supplierId], (err) => {
         if (err) {
             console.error("Erreur Update Supplier:", err);
-            return res.status(500).json({ success: false, message: "تعذر تحديث البيانات" });
+            return res.status(500).json({ success: false, message: "Error updating supplier data" });
         }
         res.json({ success: true });
     });
@@ -878,14 +898,14 @@ app.delete('/api/suppliers/:id', (req, res) => {
     db.query("UPDATE operation SET id_fournisseur = NULL WHERE id_fournisseur = ?", [supplierId], (errUpdate) => {
         if (errUpdate) {
             console.error("Erreur Update Operation before delete:", errUpdate);
-            return res.status(500).json({ success: false, message: "تعذر الحذف بسبب قيود قاعدة البيانات" });
+            return res.status(500).json({ success: false, message: "Error deleting due to database constraints" });
         }
         
         const sql = "DELETE FROM fournisseur WHERE id = ?";
         db.query(sql, [supplierId], (err) => {
             if (err) {
                 console.error("Erreur Delete Supplier:", err);
-                return res.status(500).json({ success: false, message: "تعذر الحذف" });
+                return res.status(500).json({ success: false, message: "Error deleting supplier" });
             }
             res.json({ success: true });
         });
@@ -920,7 +940,7 @@ app.post('/api/transactions', async (req, res) => {
         
         await db.promise().query(sqlUpdateSolde, [montant, entite_id]);
 
-        res.status(200).json({ message: "تم التسجيل بنجاح" });
+        res.status(200).json({ message: "Registered Successfully" });
 
     } catch (err) {
         // طباعة الخطأ في تيرمينال السيرفر

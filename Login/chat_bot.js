@@ -163,7 +163,7 @@ app.get('/api/health', async (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    if (!message) return res.status(400).json({ success: false, message: 'الرسالة فارغة' });
+    if (!message) return res.status(400).json({ success: false, message: 'Empty Message!!' });
 
     console.log(`📩 Received message: ${message}`);
 
