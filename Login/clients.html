@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Bricallerie - Clients</title>
+    <title>BRICODZ - Clients</title>
     <link rel="stylesheet" href="clients.css">
     <link rel="stylesheet" href="dark-theme.css">
     <script src="theme.js"></script>
@@ -107,6 +107,16 @@
                 </div>
                 <button type="submit" class="btn-save">Mettre à jour</button>
             </form>
+        </div>
+    </div>
+    <div id="salesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-sales-btn" style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+            <h2 id="salesModalClientName">Dernières Ventes</h2>
+            <div id="salesModalContent" style="margin-top: 15px;">
+                <!-- Sales list will be populated here dynamically -->
+                <p>Chargement des données...</p>
+            </div>
         </div>
     </div>
     <script src="clients.js"></script>

@@ -401,12 +401,29 @@ const socket = io();
 // مصفوفة لتخزين الإشعارات المستلمة محلياً أثناء تصفح الصفحة
 let notificationsList = [];
 
+async function loadNotificationsFromDb() {
+    try {
+        const response = await fetch('/api/notifications');
+        if (!response.ok) throw new Error('Failed to load notifications');
+        const notifications = await response.json();
+        if (Array.isArray(notifications) && notifications.length > 0) {
+            notificationsList = notifications;
+        }
+    } catch (error) {
+        console.error('Notification load error:', error);
+    } finally {
+        updateNotificationUI();
+    }
+}
+
+loadNotificationsFromDb();
+
 // الاستماع لحدث نقص المخزون القادم من السيرفر
 socket.on('low-stock-alert', (data) => {
-    // إضافة الإشعار الجديد في أول القائمة
-    notificationsList.unshift(data);
-    
-    // تحديث عناصر الواجهة
+    // إضافة الإشعار الجديد في أول القائمة فقط إذا لم يكن موجوداً مسبقاً
+    if (!notificationsList.some(item => item.id === data.id)) {
+        notificationsList.unshift(data);
+    }
     updateNotificationUI();
 });
 
@@ -429,8 +446,8 @@ function updateNotificationUI() {
         // توليد عناصر الـ HTML لكل إشعار جديد
         listContainer.innerHTML = notificationsList.map(notif => `
             <li class="notification-item unread" style="padding: 10px; border-bottom: 1px solid var(--border-color, #f1f1f1); list-style: none;">
-                <strong style="color: #ef4444; font-size: 13px;">⚠️ ${notif.title}</strong>
-                <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted, #555);">${notif.message}</p>
+                <strong style="font-size: 13px; color: #000000;">⚠️ ${notif.title}</strong>
+                <p style="margin: 4px 0 0 0; font-size: 12px; color: #000000;">${notif.message}</p>
             </li>
         `).join('');
     }

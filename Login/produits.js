@@ -257,3 +257,4 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSuppliers(); // جلب الموردين
     fetchAndDisplayProducts(); // عرض المنتجات
 });
+p

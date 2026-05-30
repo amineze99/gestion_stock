@@ -6,15 +6,19 @@ const closeModalBtn = document.querySelector('.close-btn');
 const closeEditBtn = document.querySelector('.close-edit-btn');
 const clientForm = document.getElementById('addClientForm');
 const editClientForm = document.getElementById('editClientForm');
+const salesModal = document.getElementById('salesModal');
+const closeSalesBtn = document.querySelector('.close-sales-btn');
 
 // --- التحكم في النوافذ (Modal Control) ---
 openModalBtn.onclick = () => { modal.style.display = "block"; };
 closeModalBtn.onclick = () => { modal.style.display = "none"; };
 if (closeEditBtn) { closeEditBtn.onclick = () => { editModal.style.display = "none"; }; }
+if (closeSalesBtn) { closeSalesBtn.onclick = () => { salesModal.style.display = "none"; }; }
 
 window.onclick = (event) => {
     if (event.target == modal) modal.style.display = "none";
     if (event.target == editModal) editModal.style.display = "none";
+    if (event.target == salesModal) salesModal.style.display = "none";
 };
 
 // --- التعامل مع السيرفر (Backend) ---
@@ -70,7 +74,7 @@ function renderClients(clients) {
                     <strong style="color: ${c.total_solde > 0 ? '#ef4444' : '#10b981'}">${c.total_solde} DA</strong>
                 </div>
             </div>
-            <button class="view-history">View Details</button>
+            <button class="view-history" onclick="viewClientSales(${c.id}, '${(c.nom || '').replace(/'/g, "\\'")}')">View Details</button>
         </div>`;
     }).join('');
 }
@@ -126,6 +130,38 @@ window.openEditModal = function(id, nom, contact, solde, rc = '', nif = '', ai =
     document.getElementById('editClientNIS').value = nis;
     document.getElementById('editClientSolde').value = solde;
     editModal.style.display = "block";
+};
+
+// وظيفة عرض تفاصيل مبيعات الزبون
+window.viewClientSales = async function(id, nom) {
+    const title = document.getElementById('salesModalClientName');
+    const content = document.getElementById('salesModalContent');
+    title.textContent = "Dernières Ventes - " + nom;
+    content.innerHTML = "<p>Chargement des données...</p>";
+    salesModal.style.display = "block";
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/clients/${id}/ventes`);
+        const sales = await response.json();
+        
+        if (sales && sales.length > 0) {
+            let html = '<ul style="list-style: none; padding: 0;">';
+            sales.forEach(s => {
+                const dateStr = new Date(s.date_op).toLocaleString('fr-FR');
+                html += `<li style="padding: 10px; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between;">
+                            <span>${dateStr}</span>
+                            <strong>${s.montant_total} DA</strong>
+                         </li>`;
+            });
+            html += '</ul>';
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = "<p>Aucune vente récente trouvée pour ce client.</p>";
+        }
+    } catch (error) {
+        console.error("Error fetching sales:", error);
+        content.innerHTML = "<p>Erreur lors du chargement des ventes.</p>";
+    }
 };
 
 // تحديث البيانات (Submit Update)

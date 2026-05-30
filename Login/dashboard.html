@@ -1,0 +1,37 @@
+<DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="achats.css">
+    <!-- Add other CSS files like sidebar.css, etc., if they exist for your dashboard layout -->
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- This is a placeholder for your actual dashboard layout (sidebar, header, etc.) -->
+        <div class="top-header">
+            <!-- Top header elements -->
+        </div>
+
+        <main class="main-content">
+            <h1>Bienvenue sur le Tableau de Bord</h1>
+            <!-- Your dashboard content goes here. The stats and charts from dashbord.js will render here. -->
+            <div id="dashboard-stats">
+                <!-- Stats from dashbord.js will be rendered here -->
+            </div>
+            <div class="charts-container">
+                <canvas id="abcChart"></canvas>
+                <canvas id="stockLevelsChart"></canvas>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="theme.js"></script>
+    <script src="dashbord.js"></script>
+    <!-- Other page-specific scripts (produits.js, clients.js, etc.) should be loaded on their respective pages -->
+</body>
+</html>

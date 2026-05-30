@@ -97,7 +97,7 @@ async function processWithGemini(userMessage, storeData) {
     .map(p => `${p.nom_produit} (المتبقي: ${p.stock_actuel})`)
     .join('، ');
 
-  const prompt = `أنت مساعد ذكي لمتجر "Bricaillerie" لإدارة المخزون. أجب دائماً بالعربية بلهجة مهنية ومختصرة وواضحة.
+  const prompt = `أنت مساعد ذكي لمتجر "BRICODZ" لإدارة المخزون. أجب دائماً بالعربية بلهجة مهنية ومختصرة وواضحة.
 استخدم البيانات التالية للإجابة على سؤال المستخدم بدقة:
 
 📦 بيانات المتجر الحالية:

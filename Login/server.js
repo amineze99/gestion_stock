@@ -6,13 +6,37 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { Server } = require('socket.io');
 
 const XLSX = require('xlsx');
 const fs = require('fs');
-
+const OpenAI = require('openai');
 const app = express();
 const http = require('http');
 const server = http.createServer(app); // تحويل التطبيق ليدعم الـ WebSockets
+const io = new Server(server, {
+    cors: {
+        origin: '*'
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log(`Socket connected: ${socket.id}`);
+});
+
+function sendLowStockAlert(product) {
+    const notification = {
+        id: product.id,
+        title: 'Stock faible',
+        message: `${product.nom_produit} a un stock de ${product.stock_actuel}, seuil minimum ${product.quantite_min}`,
+        stock: product.stock_actuel,
+        threshold: product.quantite_min,
+        createdAt: new Date().toISOString()
+    };
+
+    io.emit('low-stock-alert', notification);
+    return notification;
+}
 
 
 
@@ -118,6 +142,20 @@ app.delete('/api/clients/:id', (req, res) => {
             });
         }
         res.json({ success: true });
+    });
+});
+// جلب مبيعات عميل معين
+app.get('/api/clients/:id/ventes', (req, res) => {
+    const sql = `SELECT o.id, o.date_op, o.montant_total 
+                 FROM Operation o 
+                 WHERE o.type_op = 'Vente' AND o.id_client = ? 
+                 ORDER BY o.date_op DESC LIMIT 10`;
+    db.query(sql, [req.params.id], (err, results) => {
+        if (err) {
+            console.error("Erreur Fetch Client Ventes:", err);
+            return res.status(500).json({ error: "Error fetching client sales" });
+        }
+        res.json(results);
     });
 });
 
@@ -337,6 +375,27 @@ app.get('/api/recent-ventes', (req, res) => {
     });
 });
 
+app.get('/api/notifications', (req, res) => {
+    const sql = `SELECT id, nom_produit, stock_actuel, quantite_min FROM Produit WHERE stock_actuel <= quantite_min ORDER BY id DESC`;
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching notifications:', err);
+            return res.status(500).json({ error: 'Database error', details: err });
+        }
+
+        const notifications = results.map(product => ({
+            id: product.id,
+            title: 'Stock faible',
+            message: `${product.nom_produit} a un stock de ${product.stock_actuel}, seuil minimum ${product.quantite_min}`,
+            stock: product.stock_actuel,
+            threshold: product.quantite_min,
+            createdAt: new Date().toISOString()
+        }));
+
+        res.json(notifications);
+    });
+});
+
 app.post('/api/ventes', (req, res) => {
     const { client_id, montant_total, items } = req.body;
     db.query("INSERT INTO Operation (type_op, montant_total, id_utilisateur, id_client) VALUES ('Vente', ?, 1, ?)", [montant_total, client_id], (err, result) => {
@@ -352,8 +411,6 @@ app.post('/api/ventes', (req, res) => {
                         
                         // التحقق مما إذا كان المخزون الحالي وصل أو قل عن الحد الأدنى المحدد
                         if (product.stock_actuel <= product.quantite_min) {
-                            // استدعاء دالة الإرسال من ملف notifications.js
-                            const { sendLowStockAlert } = require('./notifications');
                             sendLowStockAlert(product);
                         }
                     }
@@ -419,7 +476,7 @@ async function callOpenAI(messages) {
 }
 
 // System prompt explaining full database schema & query generation rules
-const systemPrompt = `Vous êtes Bricaillerie IA, un assistant intelligent d'aide à la décision pour un magasin de gestion de stock.
+const systemPrompt = `Vous êtes BRICODZ IA, un assistant intelligent d'aide à la décision pour un magasin de gestion de stock.
 Vous avez un accès complet en lecture seule à la base de données MySQL.
 
 Voici la structure exacte de la base de données (Schéma SQL) :
@@ -849,7 +906,7 @@ app.get('/api/reports/download', async (req, res) => {
 
 // تشغيل السيرفر
 const PORT = 3000;
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+// server.listen will be started after all routes are defined
 
 
 
@@ -1125,5 +1182,4 @@ app.get('/api/stats/bi-dashboard', async (req, res) => {
     }
 });
 
-
-
+server.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
